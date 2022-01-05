@@ -1,0 +1,16 @@
+{% extends "main/layout.html" %}
+
+{% block title %}
+    {{ article.title }}
+{% endblock %}
+
+{% block content %}
+    <div class="features">
+        <h1>{{ womens_detail.title }}</h1>
+        <p>{{ womens_detail.content }}</p>
+        <img src="{{womens_detail.photo.url}}">
+        <p>{{ womens_detail.time_update }}</p>
+        <a href=""><button class="btn btn-warning">Редактировать</button></a>
+        <a href=""><button class="btn btn-danger">Удалить</button></a>
+    </div>
+{% endblock %}

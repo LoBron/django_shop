@@ -1,0 +1,25 @@
+{% extends "main/layout.html" %}
+
+{% block title %}
+    Про женщин
+{% endblock %}
+
+{% block content %}
+<div class="features">
+    <h1 class="qwerty">Новости на сайте</h1>
+    {% if womens %}
+        {% for element in womens %}
+            <div class="alert alert-warning">
+                <h1>{{element.title}}</h1>
+                <h4>{{element.content}}</h4>
+                <img src="{{element.photo.url}}">
+                <hr>
+                <a href="{% url 'post' element.id %}"><button class="btn btn-warning">Читать подробнее</button></a>
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Девок нет, но вы жержитесь...</p>
+    {% endif %}
+</div>
+{% endblock %}

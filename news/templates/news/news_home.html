@@ -1,0 +1,26 @@
+{% extends "main/layout.html" %}
+
+{% block title %}
+    Говноновости на говносайте
+{% endblock %}
+
+{% block content %}
+<div class="features">
+    <h1 class="qwerty">Новости на сайте</h1>
+    {% if news %}
+        {% for element in news %}
+            <div class="alert alert-warning">
+                <h1>{{element.title}}</h1>
+                <h4>{{element.anons}}</h4>
+                <hr>
+                <a href="{% url 'news_detail' element.id %}"><button class="btn btn-warning">Читать подробнее</button></a>
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>У вас нихуя не записано</p>
+    {% endif %}
+
+
+</div>
+{% endblock %}
