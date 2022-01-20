@@ -19,6 +19,8 @@ class Womens(models.Model):
         return self.title
 
 '''    def get_absolute_url(self):
+        #формирование url 
+        
         return reverse('post', kwargs={'post_id': self.pk})'''
 
 class Category(models.Model):
