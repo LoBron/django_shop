@@ -25,7 +25,7 @@ class Product(models.Model):
     price = models.IntegerField('Цена', default=0)
     slug = models.SlugField(max_length=30)
     availability = models.BooleanField('Наличие', default=True)
-    amount = models.IntegerField('Количество', )
+    amount = models.IntegerField('Количество', default=0)
     photo = models.OneToOneField(
         Photo,
         verbose_name='Главная фотография',
@@ -43,4 +43,4 @@ class Product(models.Model):
         verbose_name_plural = "Товары"
 
     def __str__(self):
-        return self.name
+        return self.title
