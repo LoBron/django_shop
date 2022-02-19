@@ -19,9 +19,19 @@ class Womens(models.Model):
         return self.title
 
 '''    def get_absolute_url(self):
+        #формирование url 
+        
         return reverse('post', kwargs={'post_id': self.pk})'''
 
 class Category(models.Model):
     name = models.CharField('Категория', max_length=100, db_index=True)
     def __str__(self):
         return self.name
+
+class Country(models.Model):
+    name = models.CharField('Страна', max_length=20, db_index=True)
+    def __str__(self):
+        return self.name
+    class Meta:
+        verbose_name = 'Страна'
+        verbose_name_plural = 'Страны'

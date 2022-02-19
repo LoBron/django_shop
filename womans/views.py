@@ -8,10 +8,13 @@ from womans.models import Womens
 
 
 def womens_home(request):
-
     womens = Womens.objects.all()
 
-    return render(request, 'womans/womens_home.html', {'womens': womens})
+    data = {
+        'womens': womens,
+        'title': 'Персонажи'
+    }
+    return render(request, 'womans/womens_home.html', data)
 
 class WomensDetailView(DetailView):
     model = Womens
