@@ -5,21 +5,18 @@ from django.db import models
 
 class Category(models.Model):
     """Модель категории"""
-    name = models.CharField(
-        'Название',
-        max_length=30,
-        unique=True)
-    slug = models.SlugField(
-        max_length=30,
-        unique=True)
+    name = models.CharField('Название', max_length=30, unique=True)
+    slug = models.SlugField(max_length=30, unique=True)
 
     def __str__(self):
         return self.name
 
 class Photo(models.Model):
-    """Фотография товара"""
-    photo = models.ImageField("Фотография", upload_to='photos/%Y/%m/%d')
-
+    """Фотографии товара"""
+    main_photo = models.ImageField("Главная фотография", upload_to='photos/%Y/%m/%d')
+    additional_photo_01 = models.ImageField("Доп фото 1", upload_to='photos/%Y/%m/%d', null=True, blank=True)
+    additional_photo_02 = models.ImageField("Доп фото 2", upload_to='photos/%Y/%m/%d', null=True, blank=True)
+    additional_photo_03 = models.ImageField("Доп фото 3", upload_to='photos/%Y/%m/%d', null=True, blank=True)
 
     class Meta:
         verbose_name = "Фотография"
@@ -35,7 +32,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=30)
     availability = models.BooleanField('Наличие', default=True)
     amount = models.IntegerField('Количество', default=0)
-    photos = models.ManyToManyField(Photo, verbose_name='Фотографии')
+    photos = models.ForeignKey(Photo, verbose_name='Фотографии', on_delete=models.SET_NULL, null=True)
 
     class Meta:
         verbose_name = "Товар"
