@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'photologue',
-    'sortedm2m',
+    # 'photologue',
+    # 'sortedm2m',
 
     'main.apps.MainConfig',
     'news.apps.NewsConfig',

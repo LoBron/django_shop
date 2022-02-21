@@ -1,8 +1,7 @@
 from django.db import models
 
 # Create your models here.
-from photologue.models import Photo, Gallery
-
+# from photologue.models import Photo, Gallery
 
 class Category(models.Model):
     """Модель категории"""
@@ -17,26 +16,26 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class Photo(models.Model):
+    """Фотография товара"""
+    photo = models.ImageField("Фотография", upload_to='photos/%Y/%m/%d')
+
+
+    class Meta:
+        verbose_name = "Фотография"
+        verbose_name_plural = "Фотографии"
+
+
 class Product(models.Model):
     """Модель товара"""
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
     title = models.CharField('Название', max_length=50)
     description = models.TextField('Описание')
-    price = models.IntegerField('Цена', default=0)
+    price = models.FloatField('Цена', default=0)
     slug = models.SlugField(max_length=30)
     availability = models.BooleanField('Наличие', default=True)
     amount = models.IntegerField('Количество', default=0)
-    photo = models.OneToOneField(
-        Photo,
-        verbose_name='Главная фотография',
-        on_delete=models.SET_NULL,
-        null=True)
-    gallery = models.ForeignKey(
-        Gallery,
-        verbose_name='Фотографии',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True)
+    photos = models.ManyToManyField(Photo, verbose_name='Фотографии')
 
     class Meta:
         verbose_name = "Товар"
