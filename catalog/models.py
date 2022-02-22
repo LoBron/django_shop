@@ -19,6 +19,13 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class Atribut(models.Model):
+    name = models.CharField('Название', max_length=100)
+
+class AtributsGroup(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    atribut = models.ForeignKey(Atribut, on_delete=models.CASCADE)
+
 class Product(models.Model):
     """Модель товара"""
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
@@ -40,6 +47,8 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
-class Furniture_plugs(models.Model):
-    """Заглушки мебельные"""
+class AtributValue(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    atribut = models.ForeignKey(Atribut, on_delete=models.CASCADE)
+    value = models.CharField(max_length=100)
 
