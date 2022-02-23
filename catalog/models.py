@@ -19,17 +19,16 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-class Atribut(models.Model):
-    name = models.CharField('Название', max_length=100)
-
-class AtributsGroup(models.Model):
+class AtributCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    atribut = models.ForeignKey(Atribut, on_delete=models.CASCADE)
+    name = models.CharField('Название атрибута', max_length=100)
+    def __str__(self):
+        return self.name
 
 class Product(models.Model):
     """Модель товара"""
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
-    title = models.CharField('Название', max_length=50)
+    title = models.CharField('Название товара', max_length=50)
     # slug = models.SlugField(max_length=30)
     description = models.TextField('Описание')
     price = models.FloatField('Цена', default=0)
@@ -49,6 +48,7 @@ class Product(models.Model):
 
 class AtributValue(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    atribut = models.ForeignKey(Atribut, on_delete=models.CASCADE)
-    value = models.CharField(max_length=100)
-
+    atribut_category = models.ForeignKey(AtributCategory, verbose_name='Атрибут категории', on_delete=models.CASCADE)
+    value = models.CharField('Значение атрибута', max_length=100)
+    def __str__(self):
+        return self.atribut_category
