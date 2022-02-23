@@ -52,3 +52,18 @@ class AtributValue(models.Model):
     value = models.CharField('Значение атрибута', max_length=100)
     def __str__(self):
         return self.atribut_category
+
+class Cart(models.Model):
+    """Корзина"""
+    session = models.CharField("Сессия пользователя", max_length=500, null=True, blank=True)
+    user = models.ForeignKey(
+        User, verbose_name='Покупатель', on_delete=models.CASCADE, null=True, blank=True
+    )
+    accepted = models.BooleanField(verbose_name='Принято к заказу', default=False)
+
+    class Meta:
+        verbose_name = 'Корзина'
+        verbose_name_plural = 'Корзины'
+
+    def __str__(self):
+        return "{}".format(self.user)
