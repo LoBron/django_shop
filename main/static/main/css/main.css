@@ -1,34 +1,16 @@
-body{
-    background: #696969;
-}
 
 aside {
-    float: left;
+
     background: #000000;
     padding: 3%;
-    height:100vh;
+    height:80vh;
     color: #fff;
     border-right: 5px solid #2F4F4F;
 }
 
-aside img {
-    width: 150px;
-    float: left;
-
-    left: -80px;
-}
-
-aside .logo {
-    font-size: 44px;
-    margin-left: 10px;
-    font-weight: bold;
-    position: relative;
-    top: -94px;
-    left: 20px;
-}
-
 aside h3 {
-    margin-top: 50px;
+    margin-top: 20px;
+    margin-left: 20px;
     font-size: 30px;
 }
 
@@ -46,19 +28,7 @@ aside ul li:hover, aside ul a:hover {
     transform: scale(1.05);
 }
 
-main .features {
-    margin-left: 0%;
-    float: left;
-    color: #FFFFFF;
-    margin-top: 100px;
-    text-align: center;
-    width: 30%;
-}
 
 
 
-form {
-    margin-left: 34%;
-    width: 500px;
-    margin-top: 50px;
-}
+
