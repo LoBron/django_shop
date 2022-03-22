@@ -12,5 +12,10 @@ def show_all_items(request):
     }
     return render(request, 'catalog/catalog_home.html', data)
 
-def show_category(request):
-    pass
+# def show_category(request, catid):
+#     products = Product.objects.all()
+#     data = {
+#         'products': products,
+#         'title': 'Каталог'
+#     }
+#     return render(request, 'catalog/catalog_home.html', data)
