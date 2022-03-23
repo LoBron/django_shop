@@ -2,6 +2,8 @@ from django.db import models
 
 # Create your models here.
 # from photologue.models import Photo, Gallery
+from django.urls import reverse
+
 
 class Section(models.Model):
     """Модель раздела"""
@@ -18,6 +20,9 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('category', kwargs={'cat_id': self.pk})
 
 class AtributCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)

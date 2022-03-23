@@ -4,7 +4,7 @@
     {% if categoryes %}
         <ul>
             {% for cat in categoryes %}
-                <a href="#">
+                <a href="{{ cat.get_absolute_url }}">
                   <li><h5>{{cat.name}}</h5></li>
                 </a>
             {% endfor %}
