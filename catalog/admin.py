@@ -5,9 +5,11 @@ from django.contrib import admin
 # Register your models here.
 from catalog.models import *
 
+class CategoryAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('name',)}
 
 admin.site.register(Section)
-admin.site.register(Category)
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product)
 
 admin.site.register(AtributCategory)

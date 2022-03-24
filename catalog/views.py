@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 
 # Create your views here.
@@ -16,8 +17,12 @@ def show_catalog(request):
     return render(request, 'catalog/catalog_home.html', data)
 
 def show_category(request, cat_id):
-    cat = Category.objects.get(pk=cat_id)
     products = Product.objects.filter(category=cat_id)
+    # if len(products) == 0:
+    #     raise Http404()
+
+    cat = Category.objects.get(pk=cat_id)
+
     data = {
         'products': products,
         'title': cat.name,
