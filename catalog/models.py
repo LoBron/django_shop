@@ -22,7 +22,7 @@ class Category(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('category', kwargs={'cat_id': self.pk})
+        return reverse('category', kwargs={'cat_slug': self.slug})
 
 class AtributCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
@@ -34,7 +34,7 @@ class Product(models.Model):
     """Модель товара"""
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
     title = models.CharField('Название товара', max_length=50)
-    # slug = models.SlugField(max_length=30)
+    slug = models.SlugField(max_length=30)
     description = models.TextField('Описание')
     price = models.FloatField('Цена', default=0)
     availability = models.BooleanField('Наличие', default=True)
@@ -50,6 +50,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('product', kwargs={'prod_slug': self.slug})
 
 class AtributValue(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

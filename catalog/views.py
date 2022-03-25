@@ -1,8 +1,12 @@
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.db import models
 
 # Create your views here.
-from catalog.models import *
+from django.views.generic import DetailView, ListView
+
+from catalog.models import Product, Category
+
 
 
 def show_catalog(request):
@@ -16,16 +20,41 @@ def show_catalog(request):
     }
     return render(request, 'catalog/catalog_home.html', data)
 
-def show_category(request, cat_id):
-    products = Product.objects.filter(category=cat_id)
+# class CatalogProduct(ListView):
+#     model = Product
+#     template_name = 'catalog/catalog_home.html'
+#     context_object_name = 'categoryes'
+#     data = {
+#         'products': products,
+#         'categoryes': categoryes,
+#         'title': 'Каталог',
+#         'logo': 'Категории',
+#     }
+#
+#     def get_context_data(self, *, object_list = None, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         for i in data:
+#
+#         context['now'] = timezone.now()
+#         return context
+
+def show_category(request, cat_slug):
+    cat = get_object_or_404(Category, slug=cat_slug)
+    products = Product.objects.filter(category=cat.id)
     # if len(products) == 0:
     #     raise Http404()
-
-    cat = Category.objects.get(pk=cat_id)
-
     data = {
         'products': products,
         'title': cat.name,
         'logo': cat.name,
     }
     return render(request, 'catalog/catalog_category.html', data)
+
+class ProductDetail(DetailView):
+    model = Product
+    template_name = 'catalog/catalog_category_product.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
