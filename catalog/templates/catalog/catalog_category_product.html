@@ -1,0 +1,57 @@
+{% extends "catalog/catalog.html" %}
+
+{% block nav %}
+<!--    {% if categoryes %}-->
+<!--        <ul>-->
+<!--            {% for cat in categoryes %}-->
+<!--                <a href="#">-->
+<!--                  <li><h5>{{cat.name}}</h5></li>-->
+<!--                </a>-->
+<!--            {% endfor %}-->
+<!--        <ul>-->
+<!--    {% else %}-->
+<!--        <p>Категории не добавлены</p>-->
+<!--    {% endif %}-->
+{% endblock %}
+
+{% block content %}
+
+<div>
+    <h1>{{product.title}}</h1>
+    <img src="{{product.main_photo.url}}" class="card-img-top" alt="Изображение товара">
+    <h5>{{product.description}}</h5>
+    <h5>Цена: {{product.price}}</h5>
+    {% if not product.availability or product.amount == 0 %}
+        <p>Нет в наличии</p>
+    {% else %}
+        <h5>В наличии</h5>
+        <h5>Количество: {{product.amount}} шт</h5>
+    {% endif %}
+</div>
+<!--
+<!--    {% if products %}-->
+<!--        {% for p in products %}-->
+<!--          <div class="col-sm-4">-->
+<!--            <div class="card text-center border-primary mt-4" style="max-width: 540px;">-->
+<!--              <a href="#" class="btn btn-link">-->
+<!--                <img src="{{p.main_photo.url}}" class="card-img-top" alt="Изображение товара">-->
+<!--              </a>-->
+<!--              <div class="card-body">-->
+<!--                <h5 class="card-title">{{p.title}}</h5>-->
+<!--    &lt;!&ndash;                    <p class="card-text">{{p.description|truncatechars:118}}</p>&ndash;&gt;-->
+<!--                <p class="card-text">Цена: {{p.price}}</p>-->
+<!--                {% if p.availability %}-->
+<!--                  <p class="card-text">В наличии: {{p.amount}} шт</p>-->
+<!--                {% else %}-->
+<!--                  <p class="card-text">Нет в наличии</p>-->
+<!--                {% endif %}-->
+<!--    &lt;!&ndash;                    <a href="#" class="btn btn-primary">Подробнее</a>&ndash;&gt;-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        {% endfor %}-->
+<!--    {% else %}-->
+<!--        <h1>Нет товаров в каталоге</h1>-->
+<!--    {% endif %}-->
+
+{% endblock %}

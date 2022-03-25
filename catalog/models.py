@@ -34,7 +34,7 @@ class Product(models.Model):
     """Модель товара"""
     category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
     title = models.CharField('Название товара', max_length=50)
-    slug = models.SlugField(max_length=30)
+    slug = models.SlugField(max_length=30, unique=True, db_index=True, verbose_name='URL')
     description = models.TextField('Описание')
     price = models.FloatField('Цена', default=0)
     availability = models.BooleanField('Наличие', default=True)

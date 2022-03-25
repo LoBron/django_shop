@@ -53,8 +53,10 @@ def show_category(request, cat_slug):
 class ProductDetail(DetailView):
     model = Product
     template_name = 'catalog/catalog_category_product.html'
+    slug_url_kwarg = 'prod_slug'
+    context_object_name = 'product'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['now'] = timezone.now()
+        # context['now'] = timezone.now()
         return context
