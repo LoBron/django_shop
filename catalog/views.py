@@ -1,12 +1,15 @@
+from django.contrib.auth.forms import UserCreationForm
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.db import models
 
 # Create your views here.
-from django.views.generic import DetailView, ListView
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, ListView, CreateView
 
 from catalog.models import Product, Category
 
+from catalog.forms import RegisterUserForm
 
 
 def show_catalog(request):
@@ -39,14 +42,15 @@ def show_catalog(request):
 #         return context
 
 def show_category(request, cat_slug):
-    cat = get_object_or_404(Category, slug=cat_slug)
-    products = Product.objects.filter(category=cat.id)
+    # cat = get_object_or_404(Category, slug=cat_slug)
+    products = Product.objects.filter(category__slug=cat_slug)
+    # name_cat = products.get()
     # if len(products) == 0:
     #     raise Http404()
     data = {
         'products': products,
-        'title': cat.name,
-        'logo': cat.name,
+        'title': '---//---',
+        'logo': '---//---',
     }
     return render(request, 'catalog/catalog_category.html', data)
 
@@ -59,4 +63,14 @@ class ProductDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # context['now'] = timezone.now()
+        return context
+
+class RegisterUser(CreateView):
+    form_class = RegisterUserForm
+    template_name = "catalog/register.html"
+    success_url = reverse_lazy('home')
+
+    def get_context_data(self, *, object_list=None,  **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['logo'] = 'Регистрация'
         return context
