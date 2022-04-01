@@ -16,46 +16,65 @@ from catalog.forms import RegisterUserForm, LoginUserForm
 
 
 
-def show_catalog(request):
-    products = Product.objects.all()
-    categoryes = Category.objects.all().order_by('name')
-    data = {
-        'products': products,
-        'categoryes': categoryes,
-        'title': 'Каталог',
-        'logo': 'Категории',
-    }
-    return render(request, 'catalog/catalog_home.html', data)
+# def show_catalog(request):
+#     products = Product.objects.all()
+#     categoryes = Category.objects.all().order_by('name')
+#     data = {
+#         'products': products,
+#         'categoryes': categoryes,
+#         'title': 'Каталог',
+#         'logo': 'Категории',
+#     }
+#     return render(request, 'catalog/catalog_home.html', data)
 
 class ProductList(ListView):
     model = Product
     template_name = 'catalog/catalog_home.html'
     context_object_name = 'products'
-    data = {
-        'categoryes': categoryes,
+    extra_context = {
         'title': 'Каталог',
-        'logo': 'Категории',
+        'logo': 'Категории'
     }
 
-    def get_context_data(self, *, object_list = None, **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        for i in data:
-
-        context['now'] = timezone.now()
+        categoryes = Category.objects.all()
+        context['categoryes'] = categoryes
         return context
 
-def show_category(request, cat_slug):
-    # cat = get_object_or_404(Category, slug=cat_slug)
-    products = Product.objects.filter(category__slug=cat_slug)
-    # name_cat = products.get()
-    # if len(products) == 0:
-    #     raise Http404()
-    data = {
-        'products': products,
-        'title': '---//---',
-        'logo': '---//---',
+    def get_queryset(self):
+        return Product.objects.all()
+
+# def show_category(request, cat_slug):
+#     # cat = get_object_or_404(Category, slug=cat_slug)
+#     products = Product.objects.filter(category__slug=cat_slug)
+#     # name_cat = products.get()
+#     # if len(products) == 0:
+#     #     raise Http404()
+#     data = {
+#         'products': products,
+#         'title': '---//---',
+#         'logo': '---//---',
+#     }
+#     return render(request, 'catalog/catalog_category.html', data)
+
+class CategoryList(ListView):
+    model = Product
+    template_name = 'catalog/catalog_category.html'
+    context_object_name = 'products'
+    extra_context = {
+        'title': '///',
+        'logo': '///'
     }
-    return render(request, 'catalog/catalog_category.html', data)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        categoryes = Category.objects.all()
+        context['categoryes'] = categoryes
+        return context
+
+    def get_queryset(self):
+        return Product.objects.filter(category__slug=self.kwargs['cat_slug'])
 
 class ProductDetail(DetailView):
     model = Product

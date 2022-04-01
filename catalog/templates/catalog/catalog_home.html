@@ -28,9 +28,9 @@
     <!--                    <p class="card-text">{{p.description|truncatechars:118}}</p>-->
                 <p class="card-text">Цена: {{p.price}}</p>
                 {% if p.availability %}
-                  <p class="card-text">В наличии: {{p.amount}} шт</p>
+                  <p class="card-text"><font color="green">В наличии: {{p.amount}} шт</font></p>
                 {% else %}
-                  <p class="card-text">Нет в наличии</p>
+                  <p class="card-text"><font color="red">Нет в наличии</font></p>
                 {% endif %}
     <!--                    <a href="#" class="btn btn-primary">Подробнее</a>-->
               </div>
