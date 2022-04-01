@@ -11,12 +11,14 @@
 
         <form method="post">
             {% csrf_token %}
+                {% for error in form.non_field_errors %}
+                    <div id="emailHelp" class="form-text"><font color="red">{{ error }}</font></div>
+                {% endfor %}
             {% for f in form %}
                 <label for="exampleInputEmail1" class="form-label">{{f.label}}</label>
 <!--                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">-->
                 <p>{{ f }}</p>
                 <div id="emailHelp" class="form-text"><font color="red">{{ f.errors }}</font></div>
-
 <!--                <p><label class="form-label" for="{{ f.id_for_label }}"> {{f.label}}: </label> {{ f }}</p>-->
 <!--                <div class="form-error">{{ f.errors }}</div>-->
             {% endfor %}

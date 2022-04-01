@@ -16,7 +16,12 @@ class Category(models.Model):
     """Модель категории"""
     section = models.ForeignKey(Section, verbose_name='Раздел', on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField('Название категории', max_length=30, unique=True)
-    slug = models.SlugField(max_length=30, unique=True, db_index=True, verbose_name='URL')
+    slug = models.SlugField('URL', max_length=30, unique=True, db_index=True)
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        ordering = ['name']
 
     def __str__(self):
         return self.name
