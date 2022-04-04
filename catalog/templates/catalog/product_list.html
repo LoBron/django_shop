@@ -1,0 +1,100 @@
+{% extends "catalog/catalog.html" %}
+
+<!--{% block nav %}-->
+<!--    <p><a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true" aria-controls="collapseExample">-->
+<!--        Категории</a>-->
+<!--    </p>-->
+<!--    <div class="collapse show" id="collapseExample">-->
+<!--        <div class="card card-body">-->
+<!--            {% if categoryes %}-->
+<!--                {% for cat in categoryes %}-->
+<!--                    <li class="list-group-item d-flex justify-content-between align-items-center">-->
+<!--                        <a class="nav-link active" href="{{ cat.get_absolute_url }}">-->
+<!--                            <h5>{{cat.name}}</h5>-->
+<!--                        </a>-->
+<!--                        <span class="badge bg-primary rounded-pill">?</span>-->
+<!--                    </li>-->
+<!--                {% endfor %}-->
+<!--            {% else %}-->
+<!--                <p>Категории не добавлены</p>-->
+<!--            {% endif %}-->
+<!--        </div>-->
+<!--    </div>-->
+<!--{% endblock %}-->
+
+<!--СВОРАЧИВАЮЩИЕСЯ ЭЛЕМЕНТЫ-->
+<!--<p>-->
+<!--    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">-->
+<!--        Ссылка с href-->
+<!--    </a>-->
+<!--    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">-->
+<!--        Кнопка с data-target-->
+<!--    </button>-->
+<!--</p>-->
+<!--<div class="collapse" id="collapseExample">-->
+<!--    <div class="card card-body">-->
+<!--        Некоторый заполнитель для компонента сворачивания.-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<ul class="list-group">-->
+<!--  <li class="list-group-item d-flex justify-content-between align-items-center">-->
+<!--    Элемент списка-->
+<!--    <span class="badge bg-primary rounded-pill">14</span>-->
+<!--  </li>-->
+<!--  <li class="list-group-item d-flex justify-content-between align-items-center">-->
+<!--    Второй элемент списка-->
+<!--    <span class="badge bg-primary rounded-pill">2</span>-->
+<!--  </li>-->
+<!--  <li class="list-group-item d-flex justify-content-between align-items-center">-->
+<!--    Третий элемент списка-->
+<!--    <span class="badge bg-primary rounded-pill">1</span>-->
+<!--  </li>-->
+<!--</ul>-->
+{% block content %}
+    {% if products %}
+        {% for p in products %}
+          <div class="col-sm-4">
+            <div class="card text-center border-primary mt-4" style="max-width: 540px;">
+              <a href="{{ p.get_absolute_url }}" class="btn btn-link">
+                <img src="{{p.main_photo.url}}" class="card-img-top" alt="Изображение товара">
+              </a>
+              <div class="card-body">
+                <h5 class="card-title">{{p.title}}</h5>
+    <!--                    <p class="card-text">{{p.description|truncatechars:118}}</p>-->
+                <p class="card-text">Цена: {{p.price}}</p>
+                {% if p.availability %}
+                  <p class="card-text"><font color="green">В наличии: {{p.amount}} шт</font></p>
+                {% else %}
+                  <p class="card-text"><font color="red">Нет в наличии</font></p>
+                {% endif %}
+    <!--                    <a href="#" class="btn btn-primary">Подробнее</a>-->
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+    {% else %}
+        <h1>Нет товаров в каталоге</h1>
+    {% endif %}
+
+{% endblock %}
+
+{% block pagination %}
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+            </li>
+            {% for p in paginator.page_range %}
+                {% if page_obj.number == p %}
+                    <li class="page-item active"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+                {% else %}
+                    <li class="page-item "><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}

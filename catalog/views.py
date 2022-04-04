@@ -4,17 +4,10 @@ from django.contrib.auth.views import LoginView
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db import models
-
-# Create your views here.
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView
-
 from catalog.models import Product, Category
-
 from catalog.forms import RegisterUserForm, LoginUserForm
-
-
-
 
 # def show_catalog(request):
 #     products = Product.objects.all()
@@ -25,21 +18,21 @@ from catalog.forms import RegisterUserForm, LoginUserForm
 #         'title': 'Каталог',
 #         'logo': 'Категории',
 #     }
-#     return render(request, 'catalog/catalog_home.html', data)
+#     return render(request, 'catalog/product_list.html', data)
 
 class ProductList(ListView):
     model = Product
-    template_name = 'catalog/catalog_home.html'
+    template_name = 'catalog/product_list.html'
     context_object_name = 'products'
-    extra_context = {
-        'title': 'Каталог',
-        'logo': 'Категории'
-    }
+    paginate_by = 1
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         categoryes = Category.objects.all()
         context['categoryes'] = categoryes
+        context['title'] = 'Каталог'
+        context['logo'] = 'Категории'
+        # context['cat_selected'] = 0
         return context
 
     def get_queryset(self):
@@ -58,34 +51,45 @@ class ProductList(ListView):
 #     }
 #     return render(request, 'catalog/catalog_category.html', data)
 
-class CategoryList(ListView):
+class ProductCategoryList(ListView):
     model = Product
-    template_name = 'catalog/catalog_category.html'
+    template_name = 'catalog/product_list.html'
     context_object_name = 'products'
-    extra_context = {
-        'title': '///',
-        'logo': '///'
-    }
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         categoryes = Category.objects.all()
+        cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
         context['categoryes'] = categoryes
+        context['title'] = 'Категория - ' + cat.name
+        context['logo'] = 'Категории'
+        context['cat_selected'] = cat.id
+        # context['logo'] = str(context['products'][0].category)
         return context
 
     def get_queryset(self):
-        return Product.objects.filter(category__slug=self.kwargs['cat_slug'])
+        return Product.objects.filter(category__slug=self.kwargs['cat_slug'], availability=True)
+
 
 class ProductDetail(DetailView):
     model = Product
-    template_name = 'catalog/catalog_category_product.html'
+    template_name = 'catalog/product_detail.html'
     slug_url_kwarg = 'prod_slug'
     context_object_name = 'product'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context['now'] = timezone.now()
+        categoryes = Category.objects.all()
+        # cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
+        context['categoryes'] = categoryes
+        context['title'] = str(context['product'].title)
+        context['logo'] = 'Категории'
+        # context['cat_selected'] = cat.id
         return context
+
+    # def get_queryset(self):
+    #     return get_object_or_404(Product, slug=self.kwargs['prod_slug'])
+
 
 class RegisterUser(CreateView):
     form_class = RegisterUserForm

@@ -34,7 +34,7 @@
             <!--                </ul>-->
             <!--              </li>-->
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{% url 'catalog_home' %}">Catalog</a>
+                    <a class="{% if request.path != '/catalog/' %} nav-link active {% else %} nav-link disabled {% endif %}" aria-current="page" href="{% url 'catalog_home' %}">Catalog</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.path != '/news/' %} nav-link active {% else %} nav-link disabled {% endif %}" aria-current="page" href="{% url 'news_home' %}">Новости</a>

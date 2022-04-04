@@ -3,18 +3,40 @@
 {% block main %}
 <div class="row">
 
-  <div class="col-sm-3">
-      <aside>
-          <h3>{{logo}}</h3>
-          {% block nav %} {% endblock %}
-      </aside>
-  </div>
+    <div class="col-sm-3">
+        <aside>
+            <h3><a data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true" aria-controls="collapseExample">
+                {{logo}}
+            </a></h3>
+            <div class="collapse show" id="collapseExample">
+                <div class="card card-body">
+                    {% if categoryes %}
+                        {% for cat in categoryes %}
+                            <li class="d-flex justify-content-between align-items-center">
+                                <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}" href="{{ cat.get_absolute_url }}">
+                                    <h6>{{cat.name}}</h6>
+                                </a>
+                                <span class="badge bg-primary rounded-pill">?</span>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>Категории не добавлены</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% block filter %} {% endblock %}
+        </aside>
+    </div>
 
-  <div class="col">
-      <div class="row">
-          {% block content %} {% endblock %}
-      </div>
-  </div>
+    <div class="col">
+
+        <div class="row">
+            {% block content %} {% endblock %}
+        </div>
+
+        {% block pagination %} {% endblock %}
+
+    </div>
 
 </div>
 {% endblock %}
