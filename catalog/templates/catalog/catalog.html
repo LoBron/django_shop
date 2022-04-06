@@ -8,27 +8,42 @@
             <h3><a data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true" aria-controls="collapseExample">
                 {{logo}}
             </a></h3>
-            <div class="collapse show" id="collapseExample">
-                <div class="card card-body">
-                    {% if categoryes %}
+            {% if categoryes %}
+                <div class="collapse show" id="collapseExample">
+                    <div class="card card-body">
                         {% for cat in categoryes %}
-                            <li class="d-flex justify-content-between align-items-center">
-                                <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}" href="{{ cat.get_absolute_url }}">
-                                    <h6>{{cat.name}}</h6>
-                                </a>
-                                <span class="badge bg-primary rounded-pill">?</span>
-                            </li>
+                            {% if cat.product__count %}
+                                <li class="d-flex justify-content-between align-items-center">
+                                    <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}" href="{{ cat.get_absolute_url }}">
+                                        <h6>{{cat.name}}</h6>
+                                    </a>
+                                    <span class="badge bg-primary rounded-pill">{{ cat.product__count }}</span>
+                                </li>
+                            {% endif %}
                         {% endfor %}
-                    {% else %}
-                        <p>Категории не добавлены</p>
-                    {% endif %}
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <h5>Категории не добавлены</h5>
+            {% endif %}
             {% block filter %} {% endblock %}
         </aside>
     </div>
 
     <div class="col">
+        <div class="row">
+
+            <div class="col">
+            </div>
+
+            <div class="col-sm-4">
+                <form action="{% url 'search' %}" method="get" class="d-flex">
+                    <input class="form-control me-2" type="search" name="s" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Поиск</button>
+                </form>
+            </div>
+
+        </div>
 
         <div class="row">
             {% block content %} {% endblock %}

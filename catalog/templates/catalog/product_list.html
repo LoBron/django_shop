@@ -52,49 +52,54 @@
 <!--  </li>-->
 <!--</ul>-->
 {% block content %}
-    {% if products %}
-        {% for p in products %}
-          <div class="col-sm-4">
-            <div class="card text-center border-primary mt-4" style="max-width: 540px;">
-              <a href="{{ p.get_absolute_url }}" class="btn btn-link">
-                <img src="{{p.main_photo.url}}" class="card-img-top" alt="Изображение товара">
-              </a>
-              <div class="card-body">
-                <h5 class="card-title">{{p.title}}</h5>
-    <!--                    <p class="card-text">{{p.description|truncatechars:118}}</p>-->
-                <p class="card-text">Цена: {{p.price}}</p>
-                {% if p.availability %}
-                  <p class="card-text"><font color="green">В наличии: {{p.amount}} шт</font></p>
-                {% else %}
-                  <p class="card-text"><font color="red">Нет в наличии</font></p>
-                {% endif %}
-    <!--                    <a href="#" class="btn btn-primary">Подробнее</a>-->
-              </div>
-            </div>
+    {% for p in products %}
+      <div class="col-sm-4">
+        <div class="card text-center border-primary mt-4" style="max-width: 540px;">
+          <a href="{{ p.get_absolute_url }}" class="btn btn-link">
+            <img src="{{p.main_photo.url}}" class="card-img-top" alt="Изображение товара">
+          </a>
+          <div class="card-body">
+            <h5 class="card-title">{{p.title}}</h5>
+<!--                    <p class="card-text">{{p.description|truncatechars:118}}</p>-->
+            <p class="card-text">Цена: {{p.price}}</p>
+            {% if p.availability %}
+              <p class="card-text"><font color="green">В наличии: {{p.amount}} шт</font></p>
+            {% else %}
+              <p class="card-text"><font color="red">Нет в наличии</font></p>
+            {% endif %}
+<!--                    <a href="#" class="btn btn-primary">Подробнее</a>-->
           </div>
-        {% endfor %}
-    {% else %}
-        <h1>Нет товаров в каталоге</h1>
-    {% endif %}
+        </div>
+      </div>
+    {% empty %}
+        <h1>Товаров не найдено</h1>
+    {% endfor %}
+
 
 {% endblock %}
 
 {% block pagination %}
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-            </li>
-            {% for p in paginator.page_range %}
-                {% if page_obj.number == p %}
-                    <li class="page-item active"><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
-                {% else %}
-                    <li class="page-item "><a class="page-link" href="?page={{ p }}">{{ p }}</a></li>
+    {% if page_obj.has_other_pages %}
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{{ s }}page={{ page_obj.previous_page_number }}">&lt</a>
+                    </li>
                 {% endif %}
-            {% endfor %}
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
-    </nav>
+                {% for p in paginator.page_range %}
+                    {% if page_obj.number == p %}
+                        <li class="page-item active"><a class="page-link" href="?{{ s }}page={{ p }}">{{ p }}</a></li>
+                    {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+                        <li class="page-item "><a class="page-link" href="?{{ s }}page={{ p }}">{{ p }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{{ s }}page={{ page_obj.next_page_number }}">&gt</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
 {% endblock %}

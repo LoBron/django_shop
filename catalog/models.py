@@ -3,25 +3,23 @@ from django.db import models
 # Create your models here.
 # from photologue.models import Photo, Gallery
 from django.urls import reverse
+from mptt.fields import TreeForeignKey
+from mptt.models import MPTTModel
 
 
-class Section(models.Model):
-    """Модель раздела"""
-    name = models.CharField('Название раздела', max_length=30, unique=True)
-
-    def __str__(self):
-        return self.name
-
-class Category(models.Model):
+class Category(MPTTModel):
     """Модель категории"""
-    section = models.ForeignKey(Section, verbose_name='Раздел', on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField('Название категории', max_length=30, unique=True)
-    slug = models.SlugField('URL', max_length=30, unique=True, db_index=True)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    slug = models.SlugField('URL', max_length=30, unique=True)
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
 
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
-        ordering = ['name']
+    #     ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -52,7 +50,7 @@ class Product(models.Model):
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
-        ordering = ['-availability', 'category', 'title']
+        # ordering = ['-availability', 'category', 'title']
 
     def __str__(self):
         return self.title

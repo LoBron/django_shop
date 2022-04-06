@@ -1,19 +1,20 @@
 from django.contrib import admin
-
-# from photologue.admin import GalleryAdmin as GalleryAdminDefault, GalleryAdmin
-# from photologue.models import Gallery
-# Register your models here.
-from catalog.models import *
-
-class CategoryAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('name',)}
+from mptt.admin import MPTTModelAdmin
+from .models import *
 
 class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
 
-admin.site.register(Section)
-admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
+
+
+class CustomMPTTModelAdmin(MPTTModelAdmin):
+    # specify pixel amount for this ModelAdmin only:
+    mptt_level_indent = 30
+    prepopulated_fields = {'slug': ('name',)}
+
+admin.site.register(Category, CustomMPTTModelAdmin)
+
 
 admin.site.register(AtributCategory)
 admin.site.register(AtributValue)
