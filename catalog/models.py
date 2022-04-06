@@ -19,7 +19,7 @@ class Category(MPTTModel):
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
-    #     ordering = ['name']
+        # ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -35,7 +35,7 @@ class AtributCategory(models.Model):
 
 class Product(models.Model):
     """Модель товара"""
-    category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
+    category = TreeForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
     title = models.CharField('Название товара', max_length=50)
     slug = models.SlugField(max_length=30, unique=True, db_index=True, verbose_name='URL')
     description = models.TextField('Описание')

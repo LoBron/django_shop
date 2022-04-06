@@ -1,32 +1,56 @@
 {% extends "main/layout.html" %}
+{% load mptt_tags %}
 
 {% block main %}
 <div class="row">
 
     <div class="col-sm-3">
         <aside>
-            <h3><a data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true" aria-controls="collapseExample">
-                {{logo}}
-            </a></h3>
-            {% if categoryes %}
-                <div class="collapse show" id="collapseExample">
-                    <div class="card card-body">
-                        {% for cat in categoryes %}
-                            {% if cat.product__count %}
-                                <li class="d-flex justify-content-between align-items-center">
-                                    <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}" href="{{ cat.get_absolute_url }}">
-                                        <h6>{{cat.name}}</h6>
-                                    </a>
-                                    <span class="badge bg-primary rounded-pill">{{ cat.product__count }}</span>
-                                </li>
+            <div class="accordion" id="accordionPanelsStayOpenExample">
+                {% if categoryes %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                        <h5>{{logo1}}</h5>
+                      </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                      <div class="accordion-body">
+                        {% recursetree categoryes %}
+                            <li class="d-flex justify-content-between align-items-center">
+                                <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}" href="{{ node.get_absolute_url }}">
+                                    <h6>{{node.name}}</h6>
+                                </a>
+                                <span class="badge bg-primary rounded-pill">{{ node.product__count }}</span>
+                            </li>
+                            {% if not node.is_leaf_node %}
+                                <ul class="children">
+                                    {{ children }}
+                                </ul>
                             {% endif %}
-                        {% endfor %}
+                        {% endrecursetree %}
+                      </div>
                     </div>
                 </div>
-            {% else %}
-                <h5>Категории не добавлены</h5>
-            {% endif %}
-            {% block filter %} {% endblock %}
+                {% else %}
+                    <h5>Категории не добавлены</h5>
+                {% endif %}
+
+                {% if request.path != '/catalog/' %}
+                <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                    <h5>{{logo2}}</h5>
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                  <div class="accordion-body">
+                    Тут должны быть параметры для фильтрации
+                  </div>
+                </div>
+              </div>
+                {% endif %}
+            </div>
         </aside>
     </div>
 
@@ -45,7 +69,7 @@
 
         </div>
 
-        <div class="row">
+        <div class="row" id="nav">
             {% block content %} {% endblock %}
         </div>
 
@@ -55,3 +79,4 @@
 
 </div>
 {% endblock %}
+
