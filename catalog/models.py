@@ -28,10 +28,29 @@ class Category(MPTTModel):
         return reverse('category', kwargs={'cat_slug': self.slug})
 
 class AtributCategory(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    category = TreeForeignKey(Category, on_delete=models.SET_NULL, null=True, verbose_name='Категория')
     name = models.CharField('Название атрибута', max_length=100)
+    slug = models.SlugField('URL', max_length=100, unique=True, )
+
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "Атрибут"
+        verbose_name_plural = "Атрибуты"
+
+    # def get_absolute_url(self):
+    #     return reverse('atribut', kwargs={'atribut_slug': self.slug})
+
+class AtributValue(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    atribut_category = models.ForeignKey(AtributCategory, verbose_name='Атрибут категории', on_delete=models.CASCADE)
+    value = models.CharField('Значение атрибута', max_length=100)
+    def __str__(self):
+        return self.atribut_category
+    class Meta:
+        verbose_name = "Значение атрибута"
+        verbose_name_plural = "Значения атрибутов"
 
 class Product(models.Model):
     """Модель товара"""
@@ -58,12 +77,6 @@ class Product(models.Model):
     def get_absolute_url(self):
         return reverse('product', kwargs={'prod_slug': self.slug})
 
-class AtributValue(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    atribut_category = models.ForeignKey(AtributCategory, verbose_name='Атрибут категории', on_delete=models.CASCADE)
-    value = models.CharField('Значение атрибута', max_length=100)
-    def __str__(self):
-        return self.atribut_category
 
 # class Cart(models.Model):
 #     """Корзина"""

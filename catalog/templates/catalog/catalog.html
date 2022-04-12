@@ -8,30 +8,30 @@
         <aside>
             <div class="accordion" id="accordionPanelsStayOpenExample">
                 {% if categoryes %}
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
-                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                        <h5>{{logo1}}</h5>
-                      </button>
-                    </h2>
-                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
-                      <div class="accordion-body">
-                        {% recursetree categoryes %}
-                            <li class="d-flex justify-content-between align-items-center">
-                                <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}" href="{{ node.get_absolute_url }}">
-                                    <h6>{{node.name}}</h6>
-                                </a>
-                                <span class="badge bg-primary rounded-pill">{{ node.product__count }}</span>
-                            </li>
-                            {% if not node.is_leaf_node %}
-                                <ul class="children">
-                                    {{ children }}
-                                </ul>
-                            {% endif %}
-                        {% endrecursetree %}
-                      </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                            <h5>{{logo1}}</h5>
+                          </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                          <div class="accordion-body">
+                            {% recursetree categoryes %}
+                                <li class="d-flex justify-content-between align-items-center">
+                                    <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}" href="{{ node.get_absolute_url }}">
+                                        <h6>{{node.name}}</h6>
+                                    </a>
+                                    <span class="badge bg-primary rounded-pill">{{ node.product__count }}</span>
+                                </li>
+                                {% if not node.is_leaf_node %}
+                                    <ul class="children">
+                                        {{ children }}
+                                    </ul>
+                                {% endif %}
+                            {% endrecursetree %}
+                          </div>
+                        </div>
                     </div>
-                </div>
                 {% else %}
                     <h5>Категории не добавлены</h5>
                 {% endif %}
