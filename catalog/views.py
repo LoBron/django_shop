@@ -14,7 +14,7 @@ from .utils import DataMixin
 class ProductList(DataMixin, ListView):
 
     def get_queryset(self):
-        return Product.objects.all().order_by('-availability', 'category')
+        return Product.objects.all().order_by('-availability', 'category').select_related('category')
 
     def get_context_data(self, *, object_list=None, **kwargs):
 
@@ -25,10 +25,9 @@ class ProductList(DataMixin, ListView):
 class ProductCategoryList(DataMixin, ListView):
 
     def get_queryset(self):
-        # tree_id = Category.objects.filter(slug=self.kwargs['cat_slug']).values_list('tree_id', flat=True)
-        # return Product.objects.filter(category__tree_id=tree_id[0]).order_by('-availability', 'title')
+
         cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
-        return Product.objects.filter(category__tree_id=cat.tree_id).order_by('-availability', 'title')
+        return Product.objects.filter(category__tree_id=cat.tree_id).select_related('category').order_by('-availability', 'title')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -42,41 +41,44 @@ class ProductCategoryList(DataMixin, ListView):
 class ProductFilterList(DataMixin, ListView):
 
     def get_queryset(self):
-        category = self.request.GET.get("category", None)
-        price_min = self.request.GET.get("price_min", 0)
-        price_max = self.request.GET.get("price_max", 1000000000)
+
+        category_filter = Q()
+        category = self.request.GET.getlist("category")
+        cat_id = self.request.GET.get("cat_selected", None)
+        if len(category) != 0:
+            category_filter &= Q(category__slug__in=category)
+        elif cat_id:
+            select_cat = get_object_or_404(Category, id=cat_id)
+            category_filter &= Q(category__tree_id=select_cat.tree_id)
+
+        price_filter = Q()
+        price_min = self.request.GET.get("price_min")
+        if len(price_min) == 0:
+            price_min = '0' #нужно ддостать число из базы
+        price_max = self.request.GET.get("price_max")
+        if len(price_max) == 0:
+            price_max = '1000000' #нужно ддостать число из базы
+        price_filter &= Q(price__gte=int(price_min)) & Q(price__lte=int(price_max))
+
+        availability_filter = Q()
         availability = self.request.GET.get("availability", None)
+        if availability:
+            availability_filter &= Q(availability=True)
 
-        filt = []
-
-        # if category:
-        #     # cat = Q()
-        #     # cat &= Q(category__name__icontains=category)
-        #     # filt.append(cat)
-        #     filt.append(Q(category__name__icontains=category))
-        # if price_min or price_max:
-        #     # price = Q()
-        #     # price &= Q(price__gte=int(price_1)) & Q(price__lte=int(price_2))
-        #     # filt.append(price)
-        #     filt.append(Q(price__gte=int(price_min)) & Q(price__lte=int(price_max)))
-        # if availability:
-        #     if availability == "True":
-        #         avail = True
-        #     else:
-        #         avail = False
-        #     # availability = Q()
-        #     # availability &= Q(availability=avail)
-        #     # filt.append(availability)
-        #     filt.append(Q(availability=avail))
-
-        return Product.objects.filter(*filt)
+        return Product.objects.filter(category_filter &
+                                      price_filter &
+                                      availability_filter
+                                      ).select_related('category').order_by('-availability', 'title')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        path = self.request.get_full_path().split('?')
+        c_def = self.get_user_context(title='Фильтр товаров',
+                                      path=f"{path[-1]}&")
+        cat_selected = self.request.GET.get("cat_selected", None)
+        if cat_selected:
+            c_def.update(cat_selected=int(cat_selected))
 
-        c_def = self.get_user_context(title='Фильтр товаров')
-        # cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
-        # c_def = self.get_user_context(title=f'Категория - {cat.name} - Фильтр товаров')
         return dict(list(context.items())+list(c_def.items()))
 
 class Search(DataMixin, ListView):
@@ -84,11 +86,11 @@ class Search(DataMixin, ListView):
 
     def get_queryset(self):
         search = self.request.GET.get('s')
-        return Product.objects.filter(Q(title__icontains=search) | Q(slug__icontains=search))
+        return Product.objects.filter(Q(title__icontains=search) | Q(slug__icontains=search)).select_related('category')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title='Поиск', s=f"s={self.request.GET.get('s')}&")
+        c_def = self.get_user_context(title='Поиск', path=f"s={self.request.GET.get('s')}&")
         return dict(list(context.items())+list(c_def.items()))
 
 class ProductDetail(DataMixin, DetailView):

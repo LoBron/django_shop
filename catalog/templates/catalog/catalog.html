@@ -51,23 +51,26 @@
                 <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show"
                      aria-labelledby="panelsStayOpen-headingTwo">
                     <div class="accordion-body">
-                        <form action=" {% url 'filter' %}" method="get">
+                        <form action=" {% url 'filter' %}" method="get" name="петушок">
 
-                            {% if request.path != '/catalog/' and childrens %}
-                            <li class="d-flex">
-                                <a class="nav-link active" href="#"><h6>Типы товаров</h6></a>
-                            </li>
-                            {% for cat in childrens %}
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="cat_{{cat.name}}" value="{{cat.id}}" id="flexCheckDefault">
-                                <label class="form-check-label" for="flexCheckDefault">
-                                    {{cat.name}}
-                                </label>
-                            </div>
+                            {% if request.path != '/catalog/' %}
+                                {% if childrens %}
+                                    <li class="d-flex">
+                                        <a class="nav-link active" href="#"><h6>Типы товаров</h6></a>
+                                    </li>
+                                    {% for cat in childrens %}
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="category" value="{{cat.slug}}"
+                                                   id="flexCheckDefault">
+                                            <label class="form-check-label" for="flexCheckDefault">
+                                                {{cat.name}}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
 
-                            {% endfor%}
-                            {% endif%}
-
+                                {% endif %}
+                                <input type="hidden" name="cat_selected" value="{{cat_selected}}">
+                            {% endif %}
                             <li class="d-flex">
                                 <a class="nav-link active" href="#"><h6>Стоимость</h6></a>
                             </li>
@@ -82,13 +85,12 @@
                                 <a class="nav-link active" href="#"><h6>В наличии</h6></a>
                             </li>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="True" id="flexCheckDefault">
+                                <input class="form-check-input" type="checkbox" name="availability" value="True"
+                                       id="flexCheckDefault">
                                 <label class="form-check-label" for="flexCheckDefault">
                                     Да
                                 </label>
                             </div>
-
-                            <input type="" name="cat_id" value="{{slug}}">
 
                             <button class="btn btn-outline-success" type="submit">Поиск</button>
                         </form>
