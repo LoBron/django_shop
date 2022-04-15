@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     "debug_toolbar",
     "mptt",
+    "view_breadcrumbs",
 
     # 'photologue',
     # 'sortedm2m',
@@ -85,6 +87,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'website.wsgi.application'
 

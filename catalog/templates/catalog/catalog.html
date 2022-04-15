@@ -60,8 +60,7 @@
                                     </li>
                                     {% for cat in childrens %}
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="category" value="{{cat.slug}}"
-                                                   id="flexCheckDefault">
+                                            <input class="form-check-input" type="checkbox" name="category" value="{{cat.slug}}" id="flexCheckDefault">
                                             <label class="form-check-label" for="flexCheckDefault">
                                                 {{cat.name}}
                                             </label>
@@ -102,11 +101,12 @@
         </div>
 
     </div>
-
+{% load view_breadcrumbs %}
     <div class="col">
         <div class="row">
 
             <div class="col">
+                {% render_breadcrumbs %}
             </div>
 
             <div class="col-sm-4">

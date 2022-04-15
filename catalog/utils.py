@@ -6,12 +6,10 @@ class DataMixin:
     model = Product
     template_name = 'catalog/product_list.html'
     context_object_name = 'products'
-    paginate_by = 1
+    paginate_by = 3
 
     def get_user_context(self, **kwargs):
         context = kwargs
-        # categ = Category.objects.all()
-        # context['categ'] = categ
         categoryes = Category.objects.annotate(Count('product'))
         context['categoryes'] = categoryes
         context['logo2'] = 'Параметры'

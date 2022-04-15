@@ -7,6 +7,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db import models
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView
+from view_breadcrumbs import ListBreadcrumbMixin
+
 from .models import Product, Category
 from .forms import RegisterUserForm, LoginUserForm
 from .utils import DataMixin
@@ -17,7 +19,6 @@ class ProductList(DataMixin, ListView):
         return Product.objects.all().order_by('-availability', 'category').select_related('category')
 
     def get_context_data(self, *, object_list=None, **kwargs):
-
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context()
         return dict(list(context.items())+list(c_def.items()))
@@ -25,7 +26,6 @@ class ProductList(DataMixin, ListView):
 class ProductCategoryList(DataMixin, ListView):
 
     def get_queryset(self):
-
         cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
         return Product.objects.filter(category__tree_id=cat.tree_id).select_related('category').order_by('-availability', 'title')
 
@@ -34,7 +34,6 @@ class ProductCategoryList(DataMixin, ListView):
         cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
         c_def = self.get_user_context(title='Категория - '+cat.name,
                                       cat_selected=cat.id,
-                                      slug=cat.slug,
                                       childrens=Category.objects.filter(tree_id=cat.tree_id, parent_id__isnull=False))
         return dict(list(context.items())+list(c_def.items()))
 
@@ -47,8 +46,8 @@ class ProductFilterList(DataMixin, ListView):
         cat_id = self.request.GET.get("cat_selected", None)
         if len(category) != 0:
             category_filter &= Q(category__slug__in=category)
-        elif cat_id:
-            select_cat = get_object_or_404(Category, id=cat_id)
+        elif cat_id and cat_id != '0':
+            select_cat = get_object_or_404(Category, id=int(cat_id))
             category_filter &= Q(category__tree_id=select_cat.tree_id)
 
         price_filter = Q()
@@ -73,16 +72,19 @@ class ProductFilterList(DataMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         path = self.request.get_full_path().split('?')
-        c_def = self.get_user_context(title='Фильтр товаров',
+        c_def = self.get_user_context(title='Каталог-Фильтр товаров',
                                       path=f"{path[-1]}&")
         cat_selected = self.request.GET.get("cat_selected", None)
-        if cat_selected:
-            c_def.update(cat_selected=int(cat_selected))
+        if cat_selected and cat_selected != '0':
+            cat_selected = int(cat_selected)
+            c_def.update(cat_selected=cat_selected)
+            cat = get_object_or_404(Category, id=cat_selected)
+            c_def['childrens'] = Category.objects.filter(tree_id=cat.tree_id, parent_id__isnull=False)
 
         return dict(list(context.items())+list(c_def.items()))
 
 class Search(DataMixin, ListView):
-    paginate_by = 3
+    # paginate_by = 3
 
     def get_queryset(self):
         search = self.request.GET.get('s')
@@ -90,7 +92,8 @@ class Search(DataMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title='Поиск', path=f"s={self.request.GET.get('s')}&")
+        c_def = self.get_user_context(title='Поиск',
+                                      path=f"s={self.request.GET.get('s')}&")
         return dict(list(context.items())+list(c_def.items()))
 
 class ProductDetail(DataMixin, DetailView):
