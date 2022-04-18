@@ -27,6 +27,34 @@ class Category(MPTTModel):
     def get_absolute_url(self):
         return reverse('category', kwargs={'cat_slug': self.slug})
 
+class Product(models.Model):
+    """Модель товара"""
+    category = TreeForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
+    name = models.CharField('Название товара', max_length=50)
+    slug = models.SlugField('URL', max_length=30, unique=True)
+    description = models.TextField('Описание')
+    # price = models.FloatField('Цена', default=0)
+    price = models.DecimalField('Цена', max_digits=5, decimal_places=2, default=0)
+    availability = models.BooleanField('Наличие', default=True)
+    amount = models.PositiveIntegerField('Количество', default=1)
+    main_photo = models.ImageField("Главная фотография", upload_to='photos/%Y/%m/%d')
+    additional_photo_01 = models.ImageField("Доп фото 1", upload_to='photos/%Y/%m/%d', null=True, blank=True)
+    additional_photo_02 = models.ImageField("Доп фото 2", upload_to='photos/%Y/%m/%d', null=True, blank=True)
+    additional_photo_03 = models.ImageField("Доп фото 3", upload_to='photos/%Y/%m/%d', null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Товар"
+        verbose_name_plural = "Товары"
+        # ordering = ['-availability', 'category', 'title']
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('product', kwargs={'prod_slug': self.slug})
+
+
+
 class AtributCategory(models.Model):
     category = TreeForeignKey(Category, on_delete=models.SET_NULL, null=True, verbose_name='Категория')
     name = models.CharField('Название атрибута', max_length=100)
@@ -51,31 +79,6 @@ class AtributValue(models.Model):
     class Meta:
         verbose_name = "Значение атрибута"
         verbose_name_plural = "Значения атрибутов"
-
-class Product(models.Model):
-    """Модель товара"""
-    category = TreeForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
-    title = models.CharField('Название товара', max_length=50)
-    slug = models.SlugField(max_length=30, unique=True, db_index=True, verbose_name='URL')
-    description = models.TextField('Описание')
-    price = models.FloatField('Цена', default=0)
-    availability = models.BooleanField('Наличие', default=True)
-    amount = models.PositiveIntegerField('Количество', default=0)
-    main_photo = models.ImageField("Главная фотография", upload_to='photos/%Y/%m/%d')
-    additional_photo_01 = models.ImageField("Доп фото 1", upload_to='photos/%Y/%m/%d', null=True, blank=True)
-    additional_photo_02 = models.ImageField("Доп фото 2", upload_to='photos/%Y/%m/%d', null=True, blank=True)
-    additional_photo_03 = models.ImageField("Доп фото 3", upload_to='photos/%Y/%m/%d', null=True, blank=True)
-
-    class Meta:
-        verbose_name = "Товар"
-        verbose_name_plural = "Товары"
-        # ordering = ['-availability', 'category', 'title']
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('product', kwargs={'prod_slug': self.slug})
 
 
 # class Cart(models.Model):
