@@ -103,7 +103,7 @@ class ProductDetail(DataMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title=str(context['product'].title))
+        c_def = self.get_user_context(title=str(context['product'].name))
         return dict(list(context.items())+list(c_def.items()))
 
 class RegisterUser(CreateView):
