@@ -12,6 +12,7 @@ class Cart(object):
             cart = self.session.get[settings.CART_SESSION_ID] = {}
             self.cart = cart
 
+<<<<<<< HEAD
     def __iter__(self):
         """Перебираем товары в корзине и получаем товары из базы данных"""
         product_ids = self.cart.keys()
@@ -30,6 +31,8 @@ class Cart(object):
         """Считаем сколько товаров в корзине"""
         return sum(item['quantity'] for item in self.cart.values())
 
+=======
+>>>>>>> origin/master
     def add(self, product, quantity=1, update_quantity=False):
         """Добавляем товар в корзину или обновляем его количество"""
         product_id = str(product.id)
@@ -46,11 +49,16 @@ class Cart(object):
         """Сохраняем товар"""
         self.session.modified = True
 
+<<<<<<< HEAD
     def remove(self, product):
+=======
+    def remote(self, product):
+>>>>>>> origin/master
         """Удаляем товар"""
         product_id = str(product.id)
         if product_id in self.cart:
             del self.cart[product_id]
+<<<<<<< HEAD
             self.save()
 
     def get_total_price(self):
@@ -61,3 +69,6 @@ class Cart(object):
         """Очищаем корзину в сессии"""
         del self.session[settings.CART_SESSION_ID]
         self.save()
+=======
+            self.save()
+>>>>>>> origin/master
