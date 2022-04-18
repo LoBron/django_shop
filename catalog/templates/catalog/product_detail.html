@@ -6,7 +6,7 @@
 {% block content %}
 
 <div>
-    <h1>{{product.title}}</h1>
+    <h1>{{product.name}}</h1>
     <img src="{{product.main_photo.url}}" class="card-img-top" alt="Изображение товара">
     <h5>{{product.description}}</h5>
     <h5>Цена: {{product.price}}</h5>
@@ -15,6 +15,11 @@
     {% else %}
         <h5>В наличии</h5>
         <h5>Количество: {{product.amount}} шт</h5>
+        <form action="{% url 'cart_add' product.id %}" method='post'>
+            {{ cart_product_form }}
+            {% csrf_token %}
+            <input type="submit" value="В корзину">
+        </form>
     {% endif %}
 </div>
 <!--

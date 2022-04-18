@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView
 from view_breadcrumbs import ListBreadcrumbMixin
 
+from cart.forms import CartAddProductForm
 from .models import Product, Category
 from .forms import RegisterUserForm, LoginUserForm
 from .utils import DataMixin
@@ -27,7 +28,7 @@ class ProductCategoryList(DataMixin, ListView):
 
     def get_queryset(self):
         cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
-        return Product.objects.filter(category__tree_id=cat.tree_id).select_related('category').order_by('-availability', 'title')
+        return Product.objects.filter(category__tree_id=cat.tree_id).select_related('category').order_by('-availability', 'name')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -67,7 +68,7 @@ class ProductFilterList(DataMixin, ListView):
         return Product.objects.filter(category_filter &
                                       price_filter &
                                       availability_filter
-                                      ).select_related('category').order_by('-availability', 'title')
+                                      ).select_related('category').order_by('-availability', 'name')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -88,7 +89,7 @@ class Search(DataMixin, ListView):
 
     def get_queryset(self):
         search = self.request.GET.get('s')
-        return Product.objects.filter(Q(title__icontains=search) | Q(slug__icontains=search)).select_related('category')
+        return Product.objects.filter(Q(name__icontains=search) | Q(slug__icontains=search)).select_related('category')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -99,11 +100,13 @@ class Search(DataMixin, ListView):
 class ProductDetail(DataMixin, DetailView):
     template_name = 'catalog/product_detail.html'
     slug_url_kwarg = 'prod_slug'
+    pk_url_kwarg = 'prod_id'
     context_object_name = 'product'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title=str(context['product'].name))
+        c_def = self.get_user_context(title=str(context['product'].name),
+                                      cart_product_form=CartAddProductForm())
         return dict(list(context.items())+list(c_def.items()))
 
 class RegisterUser(CreateView):

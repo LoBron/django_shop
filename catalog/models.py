@@ -19,6 +19,7 @@ class Category(MPTTModel):
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
+        index_together = (('id', 'name', 'slug'),)
         # ordering = ['name']
 
     def __str__(self):
@@ -31,9 +32,8 @@ class Product(models.Model):
     """Модель товара"""
     category = TreeForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
     name = models.CharField('Название товара', max_length=50)
-    slug = models.SlugField('URL', max_length=30, unique=True)
+    slug = models.SlugField('URL', max_length=50, db_index=True)
     description = models.TextField('Описание')
-    # price = models.FloatField('Цена', default=0)
     price = models.DecimalField('Цена', max_digits=5, decimal_places=2, default=0)
     availability = models.BooleanField('Наличие', default=True)
     amount = models.PositiveIntegerField('Количество', default=1)
@@ -45,13 +45,14 @@ class Product(models.Model):
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
+        index_together = (('id', 'slug'),)
         # ordering = ['-availability', 'category', 'title']
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('product', kwargs={'prod_slug': self.slug})
+        return reverse('product', kwargs={'prod_id': self.pk, 'prod_slug': self.slug})
 
 
 

@@ -6,12 +6,12 @@ from .models import *
 
 @register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title',)}
-
-class AtributCategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
-# admin.site.register(Product, ProductAdmin)
+# class AtributCategoryAdmin(admin.ModelAdmin):
+#     prepopulated_fields = {'slug': ('name',)}
+#
+# # admin.site.register(Product, ProductAdmin)
 
 
 class CategoryAdmin(DraggableMPTTAdmin):
@@ -33,6 +33,6 @@ admin.site.register(
 )
 
 
-admin.site.register(AtributCategory, AtributCategoryAdmin)
-admin.site.register(AtributValue)
+# admin.site.register(AtributCategory, AtributCategoryAdmin)
+# admin.site.register(AtributValue)
 # admin.site.register(Gallery, GalleryAdmin)

@@ -1,24 +1,26 @@
 from decimal import Decimal
 from django.conf import settings
-from website.catalog.models import Product
+from catalog.models import Product
 
-class Cart(object):
+
+class Cart():
 
     def __init__(self, request):
         """Инициализируем корзину"""
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
         if not cart:
-            cart = self.session.get[settings.CART_SESSION_ID] = {}
+            cart = self.session[settings.CART_SESSION_ID] = {}
+            self.cart = cart
+        else:
             self.cart = cart
 
-<<<<<<< HEAD
     def __iter__(self):
         """Перебираем товары в корзине и получаем товары из базы данных"""
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
-
         cart = self.cart.copy()
+
         for product in products:
             cart[str(product.id)]['product'] = product
 
@@ -31,8 +33,6 @@ class Cart(object):
         """Считаем сколько товаров в корзине"""
         return sum(item['quantity'] for item in self.cart.values())
 
-=======
->>>>>>> origin/master
     def add(self, product, quantity=1, update_quantity=False):
         """Добавляем товар в корзину или обновляем его количество"""
         product_id = str(product.id)
@@ -49,16 +49,11 @@ class Cart(object):
         """Сохраняем товар"""
         self.session.modified = True
 
-<<<<<<< HEAD
     def remove(self, product):
-=======
-    def remote(self, product):
->>>>>>> origin/master
         """Удаляем товар"""
         product_id = str(product.id)
         if product_id in self.cart:
             del self.cart[product_id]
-<<<<<<< HEAD
             self.save()
 
     def get_total_price(self):
@@ -69,6 +64,3 @@ class Cart(object):
         """Очищаем корзину в сессии"""
         del self.session[settings.CART_SESSION_ID]
         self.save()
-=======
-            self.save()
->>>>>>> origin/master

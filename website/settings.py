@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-qolc27wb58l1ltj)s_^zre0i+4s)l3%4_%utcnhd(7*me65w&8
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+CART_SESSION_ID = 'cart'
 
 # Application definition
 
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'news.apps.NewsConfig',
     'womans.apps.WomansConfig',
     'catalog.apps.CatalogConfig',
+    'cart.apps.CartConfig',
 ]
 
 MIDDLEWARE = [
@@ -83,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart.context_processors.cart',
             ],
         },
     },
