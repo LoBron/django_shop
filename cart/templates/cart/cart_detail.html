@@ -6,62 +6,66 @@
 {% endblock %}
 
 {% block main %}
-  <h1>Корзина покупок</h1>
   {% if cart %}
-  <table class="cart">
-    <thead>
-      <tr>
-        <th>Картинка</th>
-        <th>Товар</th>
-        <th>Обновить кол-во</th>
-        <th>Удалить</th>
-        <th>Кол-во</th>
-        <th>Цена за шт</th>
-        <th>Общая стоимость</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in cart %}
-        {% with product=item.product %}
-          <tr>
-            <td>
-              <a href="{{ product.get_absolute_url }}">
-                <img src="{% if product.main_photo %}{{ product.main_photo.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" width="200">
-              </a>
-            </td>
-            <td>{{ product.name }}</td>
-            <td>
-              <form action="{% url 'cart_add' product.id %}" method="post">
-                {{ item.update_quantity_form.quantity }}
-                {{ item.update_quantity_form.update }}
-                <input type="submit" value="Обновить">
-                {% csrf_token %}
-              </form>
-            </td>
-            <td><a href="{% url 'cart_remove' product.id %}">Удалить</a></td>
-            <td>
-              {{ item.quantity }}
-            </td>
-            <td class="num">${{ item.price }}</td>
-            <td class="num">${{ item.total_price }}</td>
-          </tr>
-        {% endwith %}
-      {% endfor %}
-      <tr class="total">
-        <td>Всего</td>
-        <td colspan="5"></td>
-        <td class="num">${{ cart.get_total_price }}</td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="text-right">
-    <a href="{% url 'catalog_home' %}" class="button light">В магазин</a>
-    <a href="#" class="button">Оформить заказ</a>
-  </p>
+    <table class="table caption-top table-hover table-bordered border-dark align-middle">
+      <caption><h2>Корзина покупок</h2></caption>
+      <thead>
+        <tr>
+          <th>Изображение</th>
+          <th>Наименование</th>
+          <th>Обновление кол-ва</th>
+          <th>Удаление</th>
+          <th>Кол-во</th>
+          <th>Цена за шт</th>
+          <th>Общая стоимость</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart %}
+          {% with product=item.product %}
+            <tr>
+              <td>
+                <a href="{{ product.get_absolute_url }}">
+                  <img src="{% if product.main_photo %}{{ product.main_photo.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}" width="200">
+                </a>
+              </td>
+              <td>{{ product.name }}</td>
+              <td>
+                <form action="{% url 'cart_add' product.id %}" method="post">
+                  {{ item.update_quantity_form.quantity }}
+                  {{ item.update_quantity_form.update }}
+                  <input type="submit" value="Обновить" class="btn btn-warning">
+                  {% csrf_token %}
+                </form>
+              </td>
+              <td>
+                <a href="{% url 'cart_remove' product.id %}" class="btn btn-danger">Удалить</a></td>
+              <td>
+                {{ item.quantity }}
+              </td>
+              <td class="num">${{ item.price }}</td>
+              <td class="num">${{ item.total_price }}</td>
+            </tr>
+          {% endwith %}
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr class="total">
+          <td colspan="4"></td>
+          <td colspan="2"><h5>Итого к оплате</h5></td>
+          <td class="num"><h5>${{ cart.get_total_price }}</h5></td>
+        </tr>
+      </tfoot>
+    </table>
+    <p>
+      <a href="{% url 'catalog_home' %}" class="btn btn-primary">В магазин</a>
+      <a href="{% url 'cart_clear' %}" class="btn btn-danger">Очистить корзину</a>
+      <a href="#" class="btn btn-success">Оформить заказ</a>
+    </p>
   {% else %}
     <h4>Товары не добавлены</h4>
     <p class="text-right">
-      <a href="{% url 'catalog_home' %}" class="button light">В магазин</a>
+      <a href="{% url 'catalog_home' %}" class="btn btn-primary">В магазин</a>
     </p>
   {% endif %}
 {% endblock %}

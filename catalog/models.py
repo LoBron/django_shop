@@ -34,7 +34,7 @@ class Product(models.Model):
     name = models.CharField('Название товара', max_length=50)
     slug = models.SlugField('URL', max_length=50, db_index=True)
     description = models.TextField('Описание')
-    price = models.DecimalField('Цена', max_digits=5, decimal_places=2, default=0)
+    price = models.DecimalField('Цена', max_digits=7, decimal_places=2, default=0)
     availability = models.BooleanField('Наличие', default=True)
     amount = models.PositiveIntegerField('Количество', default=1)
     main_photo = models.ImageField("Главная фотография", upload_to='photos/%Y/%m/%d')
