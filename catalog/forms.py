@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from catalog.models import Product, Category
 
 
 class RegisterUserForm(UserCreationForm):
@@ -23,3 +24,14 @@ class LoginUserForm(AuthenticationForm):
     # class Meta:
     #     model = User
     #     fields = ('username', 'email', 'password1', 'password2')
+
+# class AddDataCategoryForm(forms.ModelForm):
+#     class Meta:
+#         model = Category
+#         fields = ['name', 'slug', 'price', 'availability', 'amount', 'main_photo']
+
+class AddDataProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['category', 'name', 'slug', "description", 'price', 'availability', 'amount', 'main_photo']
+

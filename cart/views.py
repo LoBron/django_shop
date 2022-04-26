@@ -4,7 +4,6 @@ from .cart import Cart
 from .forms import CartAddProductForm
 from catalog.models import Product
 
-
 @require_POST
 def cart_add(request, prod_id):
     cart = Cart(request)
@@ -30,7 +29,8 @@ def cart_detail(request):
     for item in cart:
         item['update_quantity_form'] = CartAddProductForm(initial={'quantity': item['quantity'],
                                                                    'update': True})
-    return render(request, 'cart/cart_detail.html', {'cart': cart})
+    return render(request, 'cart/cart_detail.html', {'cart': cart,
+                                                     'title': 'Корзина покупок'})
 
 def cart_clear(request):
     cart = Cart(request)

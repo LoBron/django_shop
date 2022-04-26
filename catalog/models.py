@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 # from photologue.models import Photo, Gallery
+from django.template.defaultfilters import slugify
 from django.urls import reverse
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
@@ -9,9 +10,9 @@ from mptt.models import MPTTModel
 
 class Category(MPTTModel):
     """Модель категории"""
-    name = models.CharField('Название категории', max_length=30, unique=True)
+    name = models.CharField('Название категории', max_length=50, unique=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
-    slug = models.SlugField('URL', max_length=30, unique=True)
+    slug = models.SlugField('URL', max_length=50, unique=True)
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -28,12 +29,17 @@ class Category(MPTTModel):
     def get_absolute_url(self):
         return reverse('category', kwargs={'cat_slug': self.slug})
 
+    # def save(self, *args, **kwargs):
+    #     if not self.slug:
+    #         self.slug = slugify(self.name)
+    #     return super().save(*args, **kwargs)
+
 class Product(models.Model):
     """Модель товара"""
     category = TreeForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
-    name = models.CharField('Название товара', max_length=50)
-    slug = models.SlugField('URL', max_length=50, db_index=True)
-    description = models.TextField('Описание')
+    name = models.CharField('Название товара', max_length=100)
+    slug = models.SlugField('URL', max_length=100, db_index=True)
+    description = models.TextField('Описание', null=True)
     price = models.DecimalField('Цена', max_digits=7, decimal_places=2, default=0)
     availability = models.BooleanField('Наличие', default=True)
     amount = models.PositiveIntegerField('Количество', default=1)
@@ -53,6 +59,11 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('product', kwargs={'prod_id': self.pk, 'prod_slug': self.slug})
+
+    # def save(self, *args, **kwargs):
+    #     if not self.slug:
+    #         self.slug = slugify(self.name)
+    #     return super().save(*args, **kwargs)
 
 
 

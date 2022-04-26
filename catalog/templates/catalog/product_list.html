@@ -2,15 +2,15 @@
 
 {% block content %}
 {% for p in products %}
-<div class="col-sm-4">
-    <div class="card text-center border-primary mt-4 ml-2 mr-2" style="max-width: 540px;">
+<div class="col-sm-3">
+    <div class="card text-center border-primary mt-4 ml-1  mr-1" style="max-width: 540px;">
         <a href="{{ p.get_absolute_url }}" class="btn btn-link">
             <img src="{{p.main_photo.url}}" class="card-img-top" alt="Изображение товара">
         </a>
         <div class="card-body">
-            <h5 class="card-title">{{p.name}}</h5>
+            <h6 class="card-title">{{p.name}}</h6>
             <!--                    <p class="card-text">{{p.description|truncatechars:118}}</p>-->
-            <p class="card-text">Цена: {{p.price}}</p>
+            <p class="card-text">Цена: {{p.price}} грн/шт</p>
             {% if p.availability %}
             <p class="card-text"><font color="green">В наличии: {{p.amount}} шт</font></p>
             {% else %}
