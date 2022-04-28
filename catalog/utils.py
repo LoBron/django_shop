@@ -1,8 +1,9 @@
+from decimal import Decimal
+from random import random
+from django.shortcuts import get_object_or_404
 from .models import Category, Product
 from django.db.models import Count
 # import string
-
-
 
 class DataMixin:
     model = Product
@@ -23,7 +24,41 @@ class DataMixin:
             context['title'] = 'Каталог'
         return context
 
-
+def add_products_to_base(cat_name, products_in_cat):
+    products_added = 0
+    if len(products_in_cat) > 0:
+        k = 1
+        for prod in products_in_cat:
+            description = ''
+            for prop, value in prod['properties'].items():
+                description += f'{prop}: {value}. '
+            photos = [None for i in range(4)]
+            t = 0
+            for photo in prod['photos']:
+                photos[t] = f'photos/2022/04/20/{photo.split("/")[-1]}'
+                t += 1
+            try:
+                product = Product(
+                    category=get_object_or_404(Category, name=cat_name),
+                    name=prod['name'],
+                    slug=prod['slug'],
+                    description=description,
+                    price=Decimal(prod['price']),
+                    availability=True,
+                    amount=random.choice([i for i in range(1, 101)]),
+                    main_photo=photos[0],
+                    additional_photo_01=photos[1],
+                    additional_photo_02=photos[2],
+                    additional_photo_03=photos[3]
+                )
+                product.save()
+            except Exception:
+                print(f'\n            EXEPTION - Товар {prod["name"]} не добавлен - EXEPTION\n')
+                continue
+            else:
+                products_added += 1
+            k += 1
+    print(f"            Из {len(products_in_cat)} продуктов добавлено {products_added}")
 #
 #
 # def get_slug(string):

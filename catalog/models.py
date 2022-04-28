@@ -10,7 +10,7 @@ from mptt.models import MPTTModel
 
 class Category(MPTTModel):
     """Модель категории"""
-    name = models.CharField('Название категории', max_length=50, unique=True)
+    name = models.CharField('Название категории', max_length=50)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     slug = models.SlugField('URL', max_length=50, unique=True)
 
@@ -20,7 +20,7 @@ class Category(MPTTModel):
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
-        index_together = (('id', 'name', 'slug'),)
+        index_together = (('id', 'slug'),)
         # ordering = ['name']
 
     def __str__(self):
@@ -38,7 +38,7 @@ class Product(models.Model):
     """Модель товара"""
     category = TreeForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
     name = models.CharField('Название товара', max_length=100)
-    slug = models.SlugField('URL', max_length=100, db_index=True)
+    slug = models.SlugField('URL', max_length=100)
     description = models.TextField('Описание', null=True)
     price = models.DecimalField('Цена', max_digits=7, decimal_places=2, default=0)
     availability = models.BooleanField('Наличие', default=True)
