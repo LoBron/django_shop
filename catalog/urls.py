@@ -11,7 +11,6 @@ urlpatterns = [
     path('login/', views.LoginUser.as_view(), name='login'),
     path('logout/', views.logout_user, name='logout'),
     # path('save/', add_data_to_database.form_save, name='save'),
-    path('save_categories/', add_data_to_database.categories_save, name='save_cats')
-
+    path('save/', add_data_to_database.categories_save, name='save_cats')
     # path('category/<slug:cat_slug>/<slug:prod_slug>/', views.ProductDetail.as_view(), name='product'),
 ]
