@@ -18,9 +18,10 @@
 
 <body>
 <div class="container">
-    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand mb-0 h1" href="{% url 'home' %}">
-            <img class="navbar-brand" src="{% static 'main/img/logo.png' %}" alt="Лого сайта" width="30" height="">Мебельная Фурнитура
+            <img class="navbar-brand" src="{% static 'main/img/logo.png' %}" alt="Лого сайта" width="30" height="">Мебельная
+            Фурнитура
         </a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
@@ -47,6 +48,8 @@
                         <li><a class="dropdown-item" href="#">Something else here</a></li>
                     </ul>
                 </li>
+            </ul>
+            <ul class="navbar-nav me-auto  mb-lg-0 justify-content-end">
                 {% if request.user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link active" href="#" tabindex="-1">{{user.username}}</a>
@@ -67,25 +70,11 @@
                     <a class="nav-link active" href="{% url 'login' %}" tabindex="-1">Войти</a>
                 </li>
                 {% endif %}
-            </ul>
-            <ul class="navbar-nav me-auto  mb-lg-0 justify-content-end">
-                {% with total_items=cart|length %}
-                    {% if cart|length > 0 %}
-                        <li class="nav-item">
-                            <a class="{% if request.path != '/cart/' %} nav-link active {% else %} nav-link disabled {% endif %}" href="{% url 'cart_detail' %}" tabindex="-1">
-                                В корзине: {{ total_items }} шт, ${{ cart.get_total_price }}
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link disabled" href='/admin/' tabindex="-1">Корзина пустая</a>
-                        </li>
-                    {% endif %}
-                {% endwith %}
+
             </ul>
         </div>
     </nav>
-
+    {% block navigation %} {% endblock %}
     <main>
         {% block main %} {% endblock %}
     </main>

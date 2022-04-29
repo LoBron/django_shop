@@ -35,7 +35,8 @@ class ProductCategoryList(DataMixin, ListView):
         cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
         c_def = self.get_user_context(title='Категория - '+cat.name,
                                       cat_selected=cat.id,
-                                      childrens=Category.objects.filter(tree_id=cat.tree_id, parent_id__isnull=False))
+                                      childrens=Category.objects.filter(tree_id=cat.tree_id, parent_id__isnull=False),
+                                      parent=get_object_or_404(Category, id=cat.parent_id))
         return dict(list(context.items())+list(c_def.items()))
 
 class ProductFilterList(DataMixin, ListView):

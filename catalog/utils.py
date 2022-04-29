@@ -1,3 +1,4 @@
+import time
 from decimal import Decimal
 import random
 from django.shortcuts import get_object_or_404
@@ -24,11 +25,27 @@ class DataMixin:
             context['title'] = 'Каталог'
         return context
 
+def add_category_to_base(category, parent=None):
+    slug = category["slug"]
+    if category["slug"] == 'надо доработать':
+        slug = f"slug_{int(time.time() * 1000)}"
+    cat = Category(
+        name=category['name'],
+        parent=parent,
+        slug=slug
+    )
+    cat.save()
+    print(f'Категория - {category["name"]} - добавлена')
+
 def add_products_to_base(cat_name, products_in_cat):
     products_added = 0
+    category = get_object_or_404(Category, name=cat_name)
     if len(products_in_cat) > 0:
         k = 1
+        time_add_products = 0
+        time_work_base = 0
         for prod in products_in_cat:
+            timer_cycle = time.time()
             description = ''
             for prop, value in prod['properties'].items():
                 description += f'{prop}: {value}. '
@@ -38,7 +55,7 @@ def add_products_to_base(cat_name, products_in_cat):
                 photos[t] = f'photos/2022/04/20/{photo.split("/")[-1]}'
                 t += 1
             product = Product(
-                category=get_object_or_404(Category, name=cat_name),
+                category=category,
                 name=prod['name'],
                 slug=prod['slug'],
                 description=description,
@@ -50,16 +67,21 @@ def add_products_to_base(cat_name, products_in_cat):
                 additional_photo_02=photos[2],
                 additional_photo_03=photos[3]
             )
+            timer_add = time.time()
             try:
                 product.save()
             except Exception as ex:
-                print(ex.__annotations__)
-                print(f'\n            EXEPTION - Товар {prod["name"]} не добавлен - EXEPTION\n')
+                print(ex)
+                print(f'\n            EXEPTION - Товар {prod["name"]} не добавлен - {ex}\n')
                 continue
             else:
                 products_added += 1
             k += 1
+            time_add_products += time.time()-timer_cycle
+            time_work_base += time.time() - timer_add
+        print(f"            Время на добавление товаров - {time_add_products}, время работы базы - {time_work_base}, время обработки - {time_add_products - time_work_base}")
     print(f"            Из {len(products_in_cat)} продуктов добавлено {products_added}")
+
 #
 #
 # def get_slug(string):

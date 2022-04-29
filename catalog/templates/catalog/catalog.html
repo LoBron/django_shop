@@ -1,6 +1,62 @@
 {% extends "main/layout.html" %}
 {% load mptt_tags %}
 
+{% block navigation %}
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+            {% for cat in categoryes %}
+            {% if not cat.level %}
+             <li class="nav-item">
+                <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample{{cat.tree_id}}" role="button"
+                   aria-expanded="false" aria-controls="collapseExample">
+                    {{cat.name}}
+                </a>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        <ul class="navbar-nav me-auto mb-lg-20 justify-content-end">
+            {% with total_items=cart|length %}
+            {% if cart|length > 0 %}
+            <li class="nav-item">
+                <a class="{% if request.path != '/cart/' %} nav-link active {% else %} nav-link disabled {% endif %}"
+                   href="{% url 'cart_detail' %}" tabindex="-1">
+                    В корзине: {{ total_items }} шт, ${{ cart.get_total_price }}
+                </a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link disabled" href='/admin/' tabindex="-1">Корзина пустая</a>
+            </li>
+            {% endif %}
+            {% endwith %}
+        </ul>
+    </div>
+</nav>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    {% for cat in categoryes %}
+    {% if not cat.level %}
+    <div class="collapse" id="collapseExample{{cat.tree_id}}">
+        <div class="card card-body">
+            <ul>
+            {% for categ in categoryes %}
+            {% if categ.level == 1 and categ.parent_id == cat.id %}
+                <li><a class="{% nav-link active"
+                       href="{{ categ.get_absolute_url }}">
+                    <h6>{{categ.name}}</h6>
+                </a></li>
+            {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</nav>
+
+{% endblock %}
+
 {% block main %}
 <div class="row">
 
@@ -20,15 +76,15 @@
                      aria-labelledby="panelsStayOpen-headingOne">
                     <div class="accordion-body">
                         {% for cat in categoryes %}
-                        {% if not cat.level %}
-                        <li class="d-flex justify-content-between align-items-center">
-                            <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}"
-                               href="{{ cat.get_absolute_url }}">
-                                <h6>{{cat.name}}</h6>
-                            </a>
-                            <!--                                <span class="badge bg-primary rounded-pill">{{ cat.product__count }}</span>-->
-                        </li>
-                        {% endif %}
+                            {% if cat.parent_id == parent.id %}
+                                <li class="d-flex justify-content-between align-items-center">
+                                    <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}"
+                                       href="{{ cat.get_absolute_url }}">
+                                        <h6>{{cat.name}}</h6>
+                                    </a>
+                                    <!--                                <span class="badge bg-primary rounded-pill">{{ cat.product__count }}</span>-->
+                                </li>
+                            {% endif %}
                         {% endfor %}
 
                     </div>
@@ -54,21 +110,22 @@
                         <form action=" {% url 'filter' %}" method="get" name="петушок">
 
                             {% if request.path != '/catalog/' %}
-                                {% if childrens %}
-                                    <li class="d-flex">
-                                        <a class="nav-link active" href="#"><h6>Типы товаров</h6></a>
-                                    </li>
-                                    {% for cat in childrens %}
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="category" value="{{cat.slug}}" id="flexCheckDefault">
-                                            <label class="form-check-label" for="flexCheckDefault">
-                                                {{cat.name}}
-                                            </label>
-                                        </div>
-                                    {% endfor %}
+                            {% if childrens %}
+                            <li class="d-flex">
+                                <a class="nav-link active" href="#"><h6>Типы товаров</h6></a>
+                            </li>
+                            {% for cat in childrens %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="category" value="{{cat.slug}}"
+                                       id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    {{cat.name}}
+                                </label>
+                            </div>
+                            {% endfor %}
 
-                                {% endif %}
-                                <input type="hidden" name="cat_selected" value="{{cat_selected}}">
+                            {% endif %}
+                            <input type="hidden" name="cat_selected" value="{{cat_selected}}">
                             {% endif %}
                             <li class="d-flex">
                                 <a class="nav-link active" href="#"><h6>Стоимость</h6></a>
@@ -101,7 +158,7 @@
         </div>
 
     </div>
-{% load view_breadcrumbs %}
+    {% load view_breadcrumbs %}
     <div class="col">
         <div class="row">
 
