@@ -1,15 +1,11 @@
 from django.contrib.auth import logout, login
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.views import LoginView
-from django.db.models import Count, Q
-from django.http import Http404, request
-from django.shortcuts import render, get_object_or_404, redirect
-from django.db import models
+from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView
-from view_breadcrumbs import ListBreadcrumbMixin
 
-from cart.forms import CartAddProductForm
+from shop.cart.forms import CartAddProductForm
 from .models import Product, Category
 from .forms import RegisterUserForm, LoginUserForm
 from .utils import DataMixin
@@ -32,11 +28,22 @@ class ProductCategoryList(DataMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
-        c_def = self.get_user_context(title='Категория - '+cat.name,
-                                      cat_selected=cat.id,
-                                      childrens=Category.objects.filter(tree_id=cat.tree_id, parent_id__isnull=False),
-                                      parent=get_object_or_404(Category, id=cat.parent_id))
+        selected_category = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
+        cat_0 = get_object_or_404(Category, tree_id=selected_category.tree_id, parent_id__isnull=True)
+        if selected_category.level == 1:
+            name = selected_category.name
+        elif selected_category.level == 2:
+            cat_1 = get_object_or_404(Category, id=selected_category.parent_id)
+            name = cat_1.name
+        ch = Category.objects.filter(parent_id=cat_0.id)
+
+        c_def = self.get_user_context(title='Категория - '+selected_category.name,
+                                      logo1=name,
+                                      cat_selected=selected_category.id,
+                                      cat_slug=self.kwargs['cat_slug'],
+                                      ch=ch,
+                                      childrens=Category.objects.filter(parent_id=selected_category.id),
+                                      parent=get_object_or_404(Category, id=selected_category.parent_id))
         return dict(list(context.items())+list(c_def.items()))
 
 class ProductFilterList(DataMixin, ListView):

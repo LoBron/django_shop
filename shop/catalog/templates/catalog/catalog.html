@@ -39,7 +39,8 @@
     {% if not cat.level %}
     <div class="collapse" id="collapseExample{{cat.tree_id}}">
         <div class="card card-body">
-            <ul>
+<!--        <div class="nav_cat_body">-->
+            <ul class="nav_cat">
             {% for categ in categoryes %}
             {% if categ.level == 1 and categ.parent_id == cat.id %}
                 <li><a class="{% nav-link active"
@@ -64,6 +65,7 @@
 
         <div class="accordion" id="accordionPanelsStayOpenExample">
             {% if categoryes %}
+            {% if request.path != '/catalog/' %}
             <div class="accordion-item">
                 <h2 class="accordion-header" id="panelsStayOpen-headingOne">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -72,24 +74,24 @@
                         <h5>{{logo1}}</h5>
                     </button>
                 </h2>
+
                 <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
                      aria-labelledby="panelsStayOpen-headingOne">
                     <div class="accordion-body">
-                        {% for cat in categoryes %}
-                            {% if cat.parent_id == parent.id %}
-                                <li class="d-flex justify-content-between align-items-center">
-                                    <a class="{% if cat_selected != cat.id %} nav-link active {% else %} nav-link disabled {% endif %}"
-                                       href="{{ cat.get_absolute_url }}">
-                                        <h6>{{cat.name}}</h6>
-                                    </a>
-                                    <!--                                <span class="badge bg-primary rounded-pill">{{ cat.product__count }}</span>-->
-                                </li>
-                            {% endif %}
+                        {% for c in ch %}
+                            <li class="d-flex justify-content-between align-items-center">
+                                <a class="{% if cat_selected != c.id %} nav-link active {% else %} nav-link disabled {% endif %}"
+                                   href="{{ c.get_absolute_url }}">
+                                    <h6>{{c.name}}</h6>
+                                </a>
+                                <!--                                <span class="badge bg-primary rounded-pill">{{ cat.product__count }}</span>-->
+                            </li>
                         {% endfor %}
 
                     </div>
                 </div>
             </div>
+            {% endif %}
             {% else %}
             <h5>Категории не добавлены</h5>
             {% endif %}
@@ -159,7 +161,8 @@
 
     </div>
     {% load view_breadcrumbs %}
-    <div class="col">
+    <div class="col"
+    >
         <div class="row">
 
             <div class="col">

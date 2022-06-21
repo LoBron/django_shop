@@ -1,10 +1,9 @@
-from django.http import request
 from django.shortcuts import render
 
 # Create your views here.
 from django.views.generic import DetailView
 
-from womans.models import Womens
+from shop.womans.models import Womens
 
 
 def womens_home(request):

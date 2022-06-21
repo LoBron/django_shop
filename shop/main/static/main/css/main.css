@@ -9,9 +9,23 @@ aside {
 /*    color: #fff; */
 }
 
+.nav_cat {
+    list-style: none;
+    column-count: 4;
+    height: 350px;
+}
+.nav_cat li {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
 
-
-
+.nav_cat_body {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 /*
 aside ul {list-style: none}
 

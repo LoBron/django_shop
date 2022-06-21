@@ -1,17 +1,14 @@
-import time
 from decimal import Decimal
-import random
 
 from .parser.utils import get_categories_info, add_products_data
 from .utils import add_products_to_base, add_category_to_base
-from django.shortcuts import redirect, get_object_or_404
-from catalog.models import Product, Category
+from django.shortcuts import redirect
 from .data import data
 from .parser import utils
 
 def categories_save(request):
     main_url = 'https://viyar.ua'
-    path_to_download = 'D:/Jango projects/web_app_02/website/media/photos/2022/04/20/'
+    path_to_download = '/shop/media/photos/2022/04/20/'
 
     data = get_categories_info(main_url)
 

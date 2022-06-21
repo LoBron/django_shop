@@ -9,7 +9,7 @@ import concurrent.futures
 import requests
 from bs4 import BeautifulSoup as BS
 
-from catalog.models import Category, Product
+from shop.catalog import Category, Product
 
 
 def add_cat_to_base(category, parent=None):
