@@ -9,7 +9,7 @@ import concurrent.futures
 import requests
 from bs4 import BeautifulSoup as BS
 
-from shop.catalog import Category, Product
+from catalog.models import Category, Product
 
 
 def add_cat_to_base(category, parent=None):
@@ -127,13 +127,13 @@ def add_products_data(data, main_url, path_to_download):
         for j in range(len(data[i].get("categories_level_1"))):
             if len(data[i].get("categories_level_1")[j].get("categories_level_2")) > 0:
                 for k in range(len(data[i].get("categories_level_1")[j].get("categories_level_2"))):
-                    url = main_url + data[i].get("categories_level_1")[j].get("categories_level_2")[k]['href']
+                    url = main_url[:-8] + data[i].get("categories_level_1")[j].get("categories_level_2")[k]['href']
                     print(f'Добавляем список с данными о товарах внутри категории {data[i].get("categories_level_1")[j].get("categories_level_2")[k]["name"]}')
                     data[i].get("categories_level_1")[j].get("categories_level_2")[k]['products'] = get_products_data(category_url=url, path_to_download=path_to_download)
                     add_products_to_base(cat_name=data[i].get("categories_level_1")[j].get("categories_level_2")[k]['name'], products_in_cat=data[i].get("categories_level_1")[j].get("categories_level_2")[k]['products'])
                     print(f'Добавили в категорию {data[i].get("categories_level_1")[j].get("categories_level_2")[k]["name"]} товары в количестве {len(data[i].get("categories_level_1")[j].get("categories_level_2")[k]["products"])} шт\n')
             else:
-                url = main_url + data[i].get("categories_level_1")[j]['href']
+                url = main_url[:-8] + data[i].get("categories_level_1")[j]['href']
                 print(f'Добавляем список с данными о товарах внутри категории {data[i].get("categories_level_1")[j]["name"]}')
                 data[i].get("categories_level_1")[j]['products'] = get_products_data(category_url=url, path_to_download=path_to_download)
                 add_products_to_base(cat_name=data[i].get("categories_level_1")[j]['name'], products_in_cat=data[i].get("categories_level_1")[j]['products'])
@@ -223,7 +223,7 @@ def get_item_data(item_response, path_to_download):
     item_data['price'] = get_price(item_html)
     item_data['properties'] = get_properties(item_html)
     item_data['photos'] = get_photos_urls(item_data['name'], item_html)
-    download_photos(item_data.get('photos'), path_to_download)
+    # download_photos(item_data.get('photos'), path_to_download)
     # print(f"object '{item_data['name']}' added")
     return item_data
 

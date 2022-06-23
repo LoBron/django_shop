@@ -7,7 +7,7 @@ from .data import data
 from .parser import utils
 
 def categories_save(request):
-    main_url = 'https://viyar.ua'
+    main_url = 'https://viyar.ua/catalog'
     path_to_download = '/shop/media/photos/2022/04/20/'
 
     data = get_categories_info(main_url)

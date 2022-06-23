@@ -3,7 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.generic import DetailView
 
-from shop.womans.models import Womens
+from womans.models import Womens
 
 
 def womens_home(request):

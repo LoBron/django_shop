@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView
 
-from shop.cart.forms import CartAddProductForm
+from cart.forms import CartAddProductForm
 from .models import Product, Category
 from .forms import RegisterUserForm, LoginUserForm
 from .utils import DataMixin
