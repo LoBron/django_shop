@@ -34,6 +34,7 @@ class Category(MPTTModel):
     #         self.slug = slugify(self.name)
     #     return super().save(*args, **kwargs)
 
+
 class Product(models.Model):
     """Модель товара"""
     category = TreeForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
@@ -43,10 +44,10 @@ class Product(models.Model):
     price = models.DecimalField('Цена', max_digits=7, decimal_places=2, default=0)
     availability = models.BooleanField('Наличие', default=True)
     amount = models.PositiveIntegerField('Количество', default=1)
-    main_photo = models.ImageField("Главная фотография", upload_to='photos/%Y/%m/%d')
-    additional_photo_01 = models.ImageField("Доп фото 1", upload_to='photos/%Y/%m/%d', null=True, blank=True)
-    additional_photo_02 = models.ImageField("Доп фото 2", upload_to='photos/%Y/%m/%d', null=True, blank=True)
-    additional_photo_03 = models.ImageField("Доп фото 3", upload_to='photos/%Y/%m/%d', null=True, blank=True)
+    photo1 = models.CharField('Фото 1', max_length=50)
+    photo2 = models.CharField('Фото 2', max_length=50, null=True, blank=True)
+    photo3 = models.CharField('Фото 3', max_length=50, null=True, blank=True)
+    photo4 = models.CharField('Фото 4', max_length=50, null=True, blank=True)
 
     class Meta:
         verbose_name = "Товар"
@@ -66,7 +67,6 @@ class Product(models.Model):
     #     return super().save(*args, **kwargs)
 
 
-
 class AtributCategory(models.Model):
     category = TreeForeignKey(Category, on_delete=models.SET_NULL, null=True, verbose_name='Категория')
     name = models.CharField('Название атрибута', max_length=100)
@@ -82,16 +82,18 @@ class AtributCategory(models.Model):
     # def get_absolute_url(self):
     #     return reverse('atribut', kwargs={'atribut_slug': self.slug})
 
+
 class AtributValue(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
     atribut_category = models.ForeignKey(AtributCategory, verbose_name='Атрибут категории', on_delete=models.CASCADE)
     value = models.CharField('Значение атрибута', max_length=100)
+
     def __str__(self):
         return self.atribut_category
+
     class Meta:
         verbose_name = "Значение атрибута"
         verbose_name_plural = "Значения атрибутов"
-
 
 # class Cart(models.Model):
 #     """Корзина"""
