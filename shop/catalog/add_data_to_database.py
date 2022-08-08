@@ -12,7 +12,9 @@ def categories_save(request):
 
     data = get_categories_info(main_url)
 
-    add_products_data(data, main_url, path_to_download)
+    # add_products_data(data, main_url, path_to_download)
+
+
     # for cat_0 in data:
     #     add_category_to_base(category=cat_0)
     #

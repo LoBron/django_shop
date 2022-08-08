@@ -30,8 +30,8 @@ class LoginUserForm(AuthenticationForm):
 #         model = Category
 #         fields = ['name', 'slug', 'price', 'availability', 'amount', 'main_photo']
 
-class AddDataProductForm(forms.ModelForm):
-    class Meta:
-        model = Product
-        fields = ['category', 'name', 'slug', "description", 'price', 'availability', 'amount', 'main_photo']
+# class AddDataProductForm(forms.ModelForm):
+#     class Meta:
+#         model = Product
+#         fields = ['category', 'name', 'slug', "description", 'price', 'availability', 'amount', 'main_photo']
 

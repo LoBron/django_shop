@@ -37,9 +37,9 @@ class Category(MPTTModel):
 
 class Product(models.Model):
     """Модель товара"""
-    category = TreeForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
-    name = models.CharField('Название товара', max_length=100)
-    slug = models.SlugField('URL', max_length=100)
+    category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
+    name = models.CharField('Название товара', max_length=200)
+    slug = models.SlugField('URL', max_length=200)
     description = models.TextField('Описание', null=True)
     price = models.DecimalField('Цена', max_digits=7, decimal_places=2, default=0)
     availability = models.BooleanField('Наличие', default=True)
@@ -67,33 +67,33 @@ class Product(models.Model):
     #     return super().save(*args, **kwargs)
 
 
-class AtributCategory(models.Model):
-    category = TreeForeignKey(Category, on_delete=models.SET_NULL, null=True, verbose_name='Категория')
-    name = models.CharField('Название атрибута', max_length=100)
-    slug = models.SlugField('URL', max_length=100, unique=True, )
+class Property(models.Model):
+    name = models.CharField('Property name', max_length=200, unique=True)
+    products = models.ManyToManyField(Product, through='PropertyValue', through_fields=('property', 'product'))
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = "Атрибут"
-        verbose_name_plural = "Атрибуты"
+        verbose_name = "Property"
+        verbose_name_plural = "Properties"
+        ordering = ['name']
 
-    # def get_absolute_url(self):
-    #     return reverse('atribut', kwargs={'atribut_slug': self.slug})
+    def get_absolute_url(self):
+        return reverse('property', kwargs={'property_id': self.pk})
 
 
-class AtributValue(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    atribut_category = models.ForeignKey(AtributCategory, verbose_name='Атрибут категории', on_delete=models.CASCADE)
-    value = models.CharField('Значение атрибута', max_length=100)
+class PropertyValue(models.Model):
+    property = models.ForeignKey(Property, verbose_name='Property', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name='Product', on_delete=models.CASCADE)
+    value = models.CharField('Property value', max_length=200)
 
     def __str__(self):
-        return self.atribut_category
+        return f'{self.product} - {self.property}: {self.value}'
 
     class Meta:
-        verbose_name = "Значение атрибута"
-        verbose_name_plural = "Значения атрибутов"
+        verbose_name = "Property value"
+        verbose_name_plural = "Properties values"
 
 # class Cart(models.Model):
 #     """Корзина"""
