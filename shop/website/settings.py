@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     # 'sortedm2m',
 
     'main.apps.MainConfig',
-    'news.apps.NewsConfig',
-    'womans.apps.WomansConfig',
+    # 'news.apps.NewsConfig',
+    # 'womans.apps.WomansConfig',
     'catalog.apps.CatalogConfig',
     'cart.apps.CartConfig',
 ]

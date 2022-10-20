@@ -26,9 +26,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('cart/', include('cart.urls')),
-    path('news/', include('news.urls')),
-    path('womans/', include('womans.urls')),
     path('catalog/', include('catalog.urls')),
+    # path('news/', include('news.urls')),
+    # path('womans/', include('womans.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

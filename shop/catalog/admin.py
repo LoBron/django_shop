@@ -4,9 +4,20 @@ from mptt.admin import MPTTModelAdmin
 from mptt.admin import DraggableMPTTAdmin
 from .models import *
 
+
 @register(Product)
 class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+
+
+@register(Property)
+class PropertyAdmin(admin.ModelAdmin):
+    pass
+
+
+@register(PropertyValue)
+class PropertyValueAdmin(admin.ModelAdmin):
+    pass
 
 # class AtributCategoryAdmin(admin.ModelAdmin):
 #     prepopulated_fields = {'slug': ('name',)}
@@ -18,6 +29,7 @@ class CategoryAdmin(DraggableMPTTAdmin):
     # specify pixel amount for this ModelAdmin only:
     mptt_level_indent = 30
     prepopulated_fields = {'slug': ('name',)}
+
 
 admin.site.register(
     Category,
@@ -31,7 +43,6 @@ admin.site.register(
         'indented_title',
     ),
 )
-
 
 # admin.site.register(AtributCategory, AtributCategoryAdmin)
 # admin.site.register(AtributValue)

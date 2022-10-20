@@ -1,14 +1,17 @@
+from typing import Optional, List
+
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
-from django.db.models import Q
-from django.shortcuts import get_object_or_404, redirect
+from django.db.models import Q, QuerySet
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView
 
 from cart.forms import CartAddProductForm
-from .models import Product, Category
+from .models import Product, Category, Property, PropertyValue
 from .forms import RegisterUserForm, LoginUserForm
-from .utils import DataMixin
+from .utils import DataMixin, num_to_word
+
 
 class ProductList(DataMixin, ListView):
 
@@ -18,65 +21,163 @@ class ProductList(DataMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context()
-        return dict(list(context.items())+list(c_def.items()))
+        return dict(list(context.items()) + list(c_def.items()))
+
 
 class ProductCategoryList(DataMixin, ListView):
+    products: QuerySet
 
     def get_queryset(self):
         cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
-        return Product.objects.filter(category__tree_id=cat.tree_id).select_related('category').order_by('-availability', 'name')
+        childrens = cat.get_children()
+        slugs = [cat.slug]
+        if childrens:
+            for children in childrens:
+                slugs.append(children.slug)
+        products = (Product.objects
+                    .filter(category__slug__in=slugs)
+                    .select_related('category')
+                    .order_by('-availability', 'name'))
+        self.products = products
+        return products
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        selected_category = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
-        cat_0 = get_object_or_404(Category, tree_id=selected_category.tree_id, parent_id__isnull=True)
-        if selected_category.level == 1:
-            name = selected_category.name
-        elif selected_category.level == 2:
-            cat_1 = get_object_or_404(Category, id=selected_category.parent_id)
-            name = cat_1.name
-        ch = Category.objects.filter(parent_id=cat_0.id)
+        selected_cat = get_object_or_404(Category, slug=self.kwargs['cat_slug'])
+        parent_selected_cat = get_object_or_404(Category, id=selected_cat.parent_id)
+        childrens = selected_cat.get_children()
+        id_list = []
+        if childrens:
+            for child in childrens:
+                id_list.append(child.id)
+        else:
+            id_list.append(selected_cat.id)
 
-        c_def = self.get_user_context(title='Категория - '+selected_category.name,
+        # prod = Product.objects.filter(propertyvalue__property=513)
+        # print(prod)
+        # for i in prod:
+        #     print(i)
+
+        # cat_0 = get_object_or_404(Category, tree_id=selected_cat.tree_id, parent_id__isnull=True)
+        properties = (Property.objects
+                      .prefetch_related('products')
+                      .filter(products__category__in=id_list)
+                      .order_by('id', 'name').distinct('id'))
+        # for prop in properties:
+        #     print(prop.name)
+        query = {}
+        n = 2
+        for pr in properties:
+            values = (PropertyValue.objects
+                      .select_related('product')
+                      .filter(property=pr.id, product__category__in=id_list)
+                      .order_by('value')
+                      .distinct('value')
+                      .values('id', 'value'))
+            query[pr.name] = {'values': values, 'num_word': num_to_word(n), 'property_id': pr.id}
+            n += 1
+        # for v in values:
+        #     print(v.property.name, ' - ', v.product.name, ' - ', v.value)
+
+        if selected_cat.level == 1:
+            name = selected_cat.name
+        elif selected_cat.level == 2:
+            name = parent_selected_cat.name
+        # ch = Category.objects.filter(parent_id=cat_0.id)
+        c_def = self.get_user_context(title='Категория - ' + selected_cat.name,
                                       logo1=name,
-                                      cat_selected=selected_category.id,
+                                      # properties=properties,
+                                      # values=values,
+                                      cat_selected=selected_cat.id,
                                       cat_slug=self.kwargs['cat_slug'],
-                                      ch=ch,
-                                      childrens=Category.objects.filter(parent_id=selected_category.id),
-                                      parent=get_object_or_404(Category, id=selected_category.parent_id))
-        return dict(list(context.items())+list(c_def.items()))
+                                      # ch=ch,
+                                      properties=query,
+                                      childrens=selected_cat.get_children() if selected_cat.level == 1
+                                      else parent_selected_cat.get_children(),
+                                      parent=get_object_or_404(Category, id=selected_cat.parent_id))
+        return dict(list(context.items()) + list(c_def.items()))
+
+
+def product_list(request):
+    p = None
+    return render(request, 'polls/detail.html', {'poll': p})
+
 
 class ProductFilterList(DataMixin, ListView):
 
-    def get_queryset(self):
-
+    @staticmethod
+    def get_category_filter(cat_id: Optional[str]) -> Q:
         category_filter = Q()
-        category = self.request.GET.getlist("category")
-        cat_id = self.request.GET.get("cat_selected", None)
-        if len(category) != 0:
-            category_filter &= Q(category__slug__in=category)
-        elif cat_id and cat_id != '0':
-            select_cat = get_object_or_404(Category, id=int(cat_id))
-            category_filter &= Q(category__tree_id=select_cat.tree_id)
+        if cat_id:
+            selected_cat = get_object_or_404(Category, id=int(cat_id))
+            if selected_cat.level < 2:
+                id_list = [selected_cat.id]
+                children = selected_cat.get_children()
+                for child in children:
+                    id_list.append(child.id)
+                    category_filter &= Q(category__in=id_list)
+            else:
+                category_filter &= Q(category=selected_cat.id)
+        else:
+            raise AttributeError('Not found cat_selected.')
+        return category_filter
 
+    @staticmethod
+    def get_price_filter(price_min: str, price_max: str) -> Q:
         price_filter = Q()
-        price_min = self.request.GET.get("price_min")
-        if len(price_min) == 0:
-            price_min = '0' #нужно ддостать число из базы
-        price_max = self.request.GET.get("price_max")
-        if len(price_max) == 0:
-            price_max = '1000000' #нужно ддостать число из базы
-        price_filter &= Q(price__gte=int(price_min)) & Q(price__lte=int(price_max))
+        if price_min != '':
+            price_filter &= Q(price__gte=int(price_min))
+        if price_max != '':
+            price_filter &= Q(price__lte=int(price_max))
+        return price_filter
 
+    @staticmethod
+    def get_availability_filter(availability: Optional[str]) -> Q:
         availability_filter = Q()
-        availability = self.request.GET.get("availability", None)
         if availability:
             availability_filter &= Q(availability=True)
+        return availability_filter
 
-        return Product.objects.filter(category_filter &
-                                      price_filter &
-                                      availability_filter
-                                      ).select_related('category').order_by('-availability', 'name')
+    @staticmethod
+    def get_properties_filter(property_data_list: Optional[List[str]]) -> Q:
+        properties_filter = Q()
+        if property_data_list:
+            properties = {}
+            for property in property_data_list:
+                values = property.split('_')
+                proprety_id = int(values[0])
+                if not properties.get(proprety_id):
+                    properties[proprety_id] = [values[1]]
+                else:
+                    properties[proprety_id].append(values[1])
+            product_id_queryset = []
+            for property_id in properties:
+                product_id_queryset += list(PropertyValue.objects
+                                            .filter(property=property_id, value__in=properties[property_id])
+                                            .values('product').order_by('product'))
+            product_id_list = []
+            for product in product_id_queryset:
+                product_id_list.append(product['product'])
+            properties_filter &= Q(id__in=product_id_list)
+        return properties_filter
+
+    def get_queryset(self):
+        query_dict = self.request.GET
+        print(query_dict)
+
+        properties_filter = self.get_properties_filter(query_dict.getlist('properties'))
+        category_filter = self.get_category_filter(query_dict.get('cat_selected'))
+        availability_filter = self.get_availability_filter(query_dict.get("availability"))
+        price_filter = self.get_price_filter(price_min=query_dict.get("price_min"),
+                                             price_max=query_dict.get("price_max"))
+
+        queryset = (Product.objects.filter(properties_filter &
+                                           category_filter &
+                                           price_filter &
+                                           availability_filter)
+                    .select_related('category')
+                    .order_by('-availability', 'name'))
+        return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,7 +191,8 @@ class ProductFilterList(DataMixin, ListView):
             cat = get_object_or_404(Category, id=cat_selected)
             c_def['childrens'] = Category.objects.filter(tree_id=cat.tree_id, parent_id__isnull=False)
 
-        return dict(list(context.items())+list(c_def.items()))
+        return dict(list(context.items()) + list(c_def.items()))
+
 
 class Search(DataMixin, ListView):
     # paginate_by = 3
@@ -103,7 +205,8 @@ class Search(DataMixin, ListView):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title='Поиск',
                                       path=f"s={self.request.GET.get('s')}&")
-        return dict(list(context.items())+list(c_def.items()))
+        return dict(list(context.items()) + list(c_def.items()))
+
 
 class ProductDetail(DataMixin, DetailView):
     template_name = 'catalog/product_detail.html'
@@ -115,35 +218,40 @@ class ProductDetail(DataMixin, DetailView):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title=str(context['product'].name),
                                       cart_product_form=CartAddProductForm())
-        return dict(list(context.items())+list(c_def.items()))
+        return dict(list(context.items()) + list(c_def.items()))
+
 
 class RegisterUser(CreateView):
     form_class = RegisterUserForm
     template_name = "catalog/register.html"
+
     # success_url = reverse_lazy('home')
 
-    def get_context_data(self, *, object_list=None,  **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['logo'] = 'Регистрация'
         return context
+
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
         return redirect('home')
 
+
 class LoginUser(LoginView):
     form_class = LoginUserForm
     template_name = "catalog/login.html"
 
-    def get_context_data(self, *, object_list=None,  **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['logo'] = 'Авторизация'
         return context
+
     def get_success_url(self):
         """Функция нужна когда в настройках не прописан LOGIN_REDIRECT_URL"""
         return reverse_lazy('home')
 
+
 def logout_user(request):
     logout(request)
     return redirect('login')
-

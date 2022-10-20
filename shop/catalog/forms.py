@@ -17,8 +17,10 @@ class RegisterUserForm(UserCreationForm):
     #     #     'email': forms.TextInput(attrs={c})
     #     # }
 
+
 class LoginUserForm(AuthenticationForm):
-    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control', 'id': "floatingInput"}))
+    username = forms.CharField(label='Логин',
+                               widget=forms.TextInput(attrs={'class': 'form-control', 'id': "floatingInput"}))
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
     # class Meta:
@@ -34,4 +36,3 @@ class LoginUserForm(AuthenticationForm):
 #     class Meta:
 #         model = Product
 #         fields = ['category', 'name', 'slug', "description", 'price', 'availability', 'amount', 'main_photo']
-

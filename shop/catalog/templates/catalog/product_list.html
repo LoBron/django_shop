@@ -7,7 +7,7 @@
     <div class="card text-center border-primary mt-4 ml-1  mr-1" style="max-width: 540px;">
         <a href="{{ p.get_absolute_url }}" class="btn btn-link">
 <!--            <img src="{% static 'static/img/noname.jpg' %}" class="card-img-top" alt="Изображение товара">-->
-            <img src="{% if p.main_photo.url %} {{p.main_photo.url}} {% else %} {% static 'static/img/noname.jpg' %} {% endif %}" class="card-img-top" alt="Изображение товара">
+            <img src="https://drive.google.com/uc?export=view&id={{p.photo1}}" class="card-img-top" alt="Изображение товара">
         </a>
         <div class="card-body">
             <h6 class="card-title">{{p.name}}</h6>

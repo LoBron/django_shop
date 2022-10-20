@@ -2,8 +2,11 @@ import time
 from decimal import Decimal
 import random
 from django.shortcuts import get_object_or_404
+from num2words import num2words
 from .models import Category, Product
 from django.db.models import Count
+
+
 # import string
 
 class DataMixin:
@@ -25,109 +28,12 @@ class DataMixin:
             context['title'] = 'Каталог'
         return context
 
-def add_category_to_base(category, parent=None):
-    slug = category["slug"]
-    if category["slug"] == 'надо доработать':
-        slug = f"slug_{int(time.time() * 1000)}"
-    cat = Category(
-        name=category['name'],
-        parent=parent,
-        slug=slug
-    )
-    cat.save()
-    print(f'Категория - {category["name"]} - добавлена')
 
-def add_products_to_base(cat_name, products_in_cat):
-    products_added = 0
-    category = get_object_or_404(Category, name=cat_name)
-    if len(products_in_cat) > 0:
-        k = 1
-        time_add_products = 0
-        time_work_base = 0
-        for prod in products_in_cat:
-            timer_cycle = time.time()
-            description = ''
-            for prop, value in prod['properties'].items():
-                description += f'{prop}: {value}. '
-            photos = [None for i in range(4)]
-            t = 0
-            for photo in prod['photos']:
-                photos[t] = f'photos/2022/04/20/{photo.split("/")[-1]}'
-                t += 1
-            product = Product(
-                category=category,
-                name=prod['name'],
-                slug=prod['slug'],
-                description=description,
-                price=Decimal(prod['price']),
-                availability=True,
-                amount=random.choice([i for i in range(1, 101)]),
-                main_photo=photos[0],
-                additional_photo_01=photos[1],
-                additional_photo_02=photos[2],
-                additional_photo_03=photos[3]
-            )
-            timer_add = time.time()
-            try:
-                product.save()
-            except Exception as ex:
-                print(ex)
-                print(f'\n            EXEPTION - Товар {prod["name"]} не добавлен - {ex}\n')
-                continue
-            else:
-                products_added += 1
-            k += 1
-            time_add_products += time.time()-timer_cycle
-            time_work_base += time.time() - timer_add
-        print(f"            Время на добавление товаров - {time_add_products}, время работы базы - {time_work_base}, время обработки - {time_add_products - time_work_base}")
-    print(f"            Из {len(products_in_cat)} продуктов добавлено {products_added}")
-
-#
-#
-# def get_slug(string):
-#     dic = {'ь': '', 'ъ': '', 'а': 'a', 'б': 'b', 'в': 'v',
-#           'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
-#           'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l',
-#           'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r',
-#           'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h',
-#           'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ы': 'yi',
-#           'э': 'e', 'ю': 'yu', 'я': 'ya', ',':'', '.':''}
-#
-#     symbols = '-/:=_|~* '
-#     dic = dict(list(dic.items()) + [(i, '_') for i in symbols])
-#     slug = ''
-#     cash = {}
-#
-#     for i in string.lower().strip():
-#         print(i)
-#         c = cash.get(i)
-#         print(c)
-#         if c:
-#             slug += c
-#         else:
-#             dic_el = dic.get(i)
-#             print(f'{i} - {dic_el}')
-#             if dic_el:
-#                 slug += dic_el
-#                 cash[i] = dic_el
-# # `            elif el in string.whitespace.split:
-# #                 slug += '_'
-# #                 cash[el] = '_'`
-#             elif i in 'abcdefghijklmnopqrstuvwxyz' or i in '0123456789':
-#                 slug += i
-#                 cash[i] = i
-#             elif i in string.punctuation:
-#                 slug += ''
-#                 cash[i] = ''
-#             else:
-#                 slug += ''
-#                 cash[i] = ''
-#         print(slug)
-#     return slug
-#
-# print(get_slug('Анкер TGS 8х60/5,0-6,0 ЦЖ,газо-, пенобетон'))
-
-# print(string.ascii_lowercase.split())
-
-# for i in 'abcdefghijklmnopqrstuvwxyz':
-#     print(i)
+def num_to_word(n: int) -> str:
+    if n < 0 or n > 99:
+        raise ValueError('You must enter a number from 0 to 99')
+    num_word = ''
+    num = num2words(n).split('-')
+    for word in num:
+        num_word += word.capitalize()
+    return num_word

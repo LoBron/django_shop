@@ -3,59 +3,62 @@
 
 {% block navigation %}
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+    <div class="row">
+        <div class="col">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+                    {% for cat in categoryes %}
+                    {% if not cat.level %}
+                     <li class="nav-item">
+                         <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample{{cat.tree_id}}" role="button"
+                            aria-expanded="false" >{{cat.name}}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+                <ul class="navbar-nav me-auto mb-lg-20 justify-content-end">
+                    {% with total_items=cart|length %}
+                    {% if cart|length > 0 %}
+                    <li class="nav-item">
+                        <a class="{% if request.path != '/cart/' %} nav-link active {% else %} nav-link disabled {% endif %}"
+                           href="{% url 'cart_detail' %}" tabindex="-1">
+                            В корзине: {{ total_items }} шт, ${{ cart.get_total_price }}
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href='/admin/' tabindex="-1">Корзина пустая</a>
+                    </li>
+                    {% endif %}
+                    {% endwith %}
+                </ul>
+            </div>
+        </div>
+        <div class="w-100"></div>
+        <div class="col">
+            <nav class="navbar">
             {% for cat in categoryes %}
-            {% if not cat.level %}
-             <li class="nav-item">
-                <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample{{cat.tree_id}}" role="button"
-                   aria-expanded="false" aria-controls="collapseExample">
-                    {{cat.name}}
-                </a>
-            </li>
-            {% endif %}
+                {% if not cat.level %}
+                <div class="collapse" id="collapseExample{{cat.tree_id}}">
+                    <div class="card card-body">
+                        <ul class="nav_cat">
+                        {% for categ in categoryes %}
+                        {% if categ.level == 1 and categ.parent_id == cat.id %}
+                        <li><a class="{% if categ.id == cat_selected %} nav-link disabled {% else %} nav-link active {% endif %}"
+                               href="{{ categ.get_absolute_url }}">
+                            <h6>{{categ.name}}</h6>
+                        </a></li>
+                        {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
             {% endfor %}
-        </ul>
-        <ul class="navbar-nav me-auto mb-lg-20 justify-content-end">
-            {% with total_items=cart|length %}
-            {% if cart|length > 0 %}
-            <li class="nav-item">
-                <a class="{% if request.path != '/cart/' %} nav-link active {% else %} nav-link disabled {% endif %}"
-                   href="{% url 'cart_detail' %}" tabindex="-1">
-                    В корзине: {{ total_items }} шт, ${{ cart.get_total_price }}
-                </a>
-            </li>
-            {% else %}
-            <li class="nav-item">
-                <a class="nav-link disabled" href='/admin/' tabindex="-1">Корзина пустая</a>
-            </li>
-            {% endif %}
-            {% endwith %}
-        </ul>
-    </div>
-</nav>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    {% for cat in categoryes %}
-    {% if not cat.level %}
-    <div class="collapse" id="collapseExample{{cat.tree_id}}">
-        <div class="card card-body">
-<!--        <div class="nav_cat_body">-->
-            <ul class="nav_cat">
-            {% for categ in categoryes %}
-            {% if categ.level == 1 and categ.parent_id == cat.id %}
-                <li><a class="{% nav-link active"
-                       href="{{ categ.get_absolute_url }}">
-                    <h6>{{categ.name}}</h6>
-                </a></li>
-            {% endif %}
-            {% endfor %}
-            </ul>
+            </nav>
         </div>
     </div>
-    {% endif %}
-    {% endfor %}
 </nav>
-
 {% endblock %}
 
 {% block main %}
@@ -67,22 +70,25 @@
             {% if categoryes %}
             {% if request.path != '/catalog/' %}
             <div class="accordion-item">
-                <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                {% if childrens %}
+                <h2 class="accordion-header" id="{{logo1}}">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
                             aria-controls="panelsStayOpen-collapseOne">
                         <h5>{{logo1}}</h5>
                     </button>
                 </h2>
-
+                {% else %}
+                    <h5>{{logo1}}</h5>
+                {% endif %}
                 <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
                      aria-labelledby="panelsStayOpen-headingOne">
                     <div class="accordion-body">
-                        {% for c in ch %}
+                        {% for child in childrens %}
                             <li class="d-flex justify-content-between align-items-center">
-                                <a class="{% if cat_selected != c.id %} nav-link active {% else %} nav-link disabled {% endif %}"
-                                   href="{{ c.get_absolute_url }}">
-                                    <h6>{{c.name}}</h6>
+                                <a class="{% if cat_selected != child.id %} nav-link active {% else %} nav-link disabled {% endif %}"
+                                   href="{{ child.get_absolute_url }}">
+                                    <h6>{{child.name}}</h6>
                                 </a>
                                 <!--                                <span class="badge bg-primary rounded-pill">{{ cat.product__count }}</span>-->
                             </li>
@@ -92,12 +98,34 @@
                 </div>
             </div>
             {% endif %}
-            {% else %}
-            <h5>Категории не добавлены</h5>
-            {% endif %}
 
-            <!--                {% if request.path != '/catalog/' %}-->
-            <!--                {% endif %}-->
+            <form action=" {% url 'filter' %}" method="get" name="filter">
+                <input type="hidden" name="cat_selected" value="{{cat_selected}}">
+            {% for property_name, data in properties.items %}
+            <div class="accordion-item">
+            <h2 class="accordion-header" id="{{prop}}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapse{{data.num_word}}" aria-expanded="true"
+                        aria-controls="panelsStayOpen-collapse{{data.num_word}}">
+                    <h5>{{property_name}}</h5>
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapse{{data.num_word}}" class="accordion-collapse collapse close"
+                 aria-labelledby="panelsStayOpen-headingOne">
+                <div class="accordion-body">
+                    {% for value in data.values %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="properties" value="{{data.property_id}}_{{value.value}}"
+                               id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            {{value.value}}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            </div>
+            {% endfor %}
             <div class="accordion-item">
                 <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -109,28 +137,8 @@
                 <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show"
                      aria-labelledby="panelsStayOpen-headingTwo">
                     <div class="accordion-body">
-                        <form action=" {% url 'filter' %}" method="get" name="петушок">
-
-                            {% if request.path != '/catalog/' %}
-                            {% if childrens %}
                             <li class="d-flex">
-                                <a class="nav-link active" href="#"><h6>Типы товаров</h6></a>
-                            </li>
-                            {% for cat in childrens %}
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="category" value="{{cat.slug}}"
-                                       id="flexCheckDefault">
-                                <label class="form-check-label" for="flexCheckDefault">
-                                    {{cat.name}}
-                                </label>
-                            </div>
-                            {% endfor %}
-
-                            {% endif %}
-                            <input type="hidden" name="cat_selected" value="{{cat_selected}}">
-                            {% endif %}
-                            <li class="d-flex">
-                                <a class="nav-link active" href="#"><h6>Стоимость</h6></a>
+                                <h6>Стоимость</h6>
                             </li>
                             <li class="d-flex">
                                 <div class="input-group">
@@ -140,7 +148,7 @@
                             </li>
 
                             <li class="d-flex">
-                                <a class="nav-link active" href="#"><h6>В наличии</h6></a>
+                                <h6>В наличии</h6>
                             </li>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="availability" value="True"
@@ -149,13 +157,17 @@
                                     Да
                                 </label>
                             </div>
-
-                            <button class="btn btn-outline-success" type="submit">Поиск</button>
-                        </form>
-
                     </div>
                 </div>
             </div>
+            <button class="btn btn-outline-success" type="submit">Поиск</button>
+            </form>
+            {% else %}
+            <h5>Категории не добавлены</h5>
+            {% endif %}
+
+            <!--                {% if request.path != '/catalog/' %}-->
+            <!--                {% endif %}-->
 
         </div>
 
