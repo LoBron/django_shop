@@ -1,13 +1,22 @@
+from typing import Optional
+
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import (LoginView as Login,
                                        PasswordResetView as PasswordReset,
                                        PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetDoneView)
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils.http import urlsafe_base64_decode
 from django.views import View
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.views.generic import TemplateView
 
 from .forms import *
+from .utils import send_email_to_verify
+
+UserModel = get_user_model()
 
 
 class RegisterView(View):
@@ -27,8 +36,9 @@ class RegisterView(View):
             email = form.data.get('email')
             password = form.data.get('password1')
             user = authenticate(email=email, password=password)
-            login(request, user)
-            return redirect('home')
+            send_email_to_verify(request, user, use_https=False)
+            # login(request, user)
+            return redirect('confirm_email')
         else:
             context = {
                 'form': form,
@@ -40,6 +50,16 @@ class RegisterView(View):
 class LoginView(Login):
     template_name = 'users/login.html'
     form_class = LoginUserForm
+
+    # def form_valid(self, form):
+    #     user = form.get_user()
+    #     if user.email_verify:
+    #         login(self.request, user)
+    #         return redirect('home')
+    #     else:
+    #         send_email_to_verify(self.request, user, use_https=False)
+    #         return redirect('confirm_email')
+
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -85,6 +105,30 @@ class PasswordResetComplete(PasswordResetCompleteView):
         context = super().get_context_data(**kwargs)
         context['title'] = self.title
         return context
+
+
+class EmailVerify(View):
+
+    def get(self, request, uidb64, token):
+        user = self.get_user(uidb64)
+        if user and token_generator.check_token(user, token):
+            user.email_verify = True
+            user.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            redirect('invalid_verify')
+
+
+    @staticmethod
+    def get_user(uidb64) -> Optional[User]:
+        try:
+            # urlsafe_base64_decode() decodes to bytestring
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = UserModel._default_manager.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist, ValidationError):
+            user = None
+        return user
 
 # class RegisterUser(CreateView):
 #     form_class = RegisterUserForm

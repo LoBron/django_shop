@@ -1,0 +1,11 @@
+{% extends "main/layout.html" %}
+
+
+{% block main %}
+
+<div class="row">
+    <p>Ваша ссылка некорректна, залогиньтесь снова.</p>
+    <a href="{% url 'login' %}" class="btn btn-link">Войти</a>
+</div>
+
+{% endblock %}

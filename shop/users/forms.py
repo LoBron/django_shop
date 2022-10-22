@@ -1,9 +1,11 @@
 from django import forms
-from django.contrib.auth import get_user_model, password_validation
+from django.contrib.auth import get_user_model, password_validation, authenticate
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordResetForm, SetPasswordForm
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from .models import User
+from .utils import send_email_to_verify
 
 
 class RegisterUserForm(UserCreationForm):
@@ -25,6 +27,26 @@ class LoginUserForm(AuthenticationForm):
     # username = forms.CharField(label='Логин',
     #                            widget=forms.TextInput(attrs={'class': 'form-control', 'id': "floatingInput"}))
     password = forms.CharField(label=_('Пароль'), widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username is not None and password:
+            self.user_cache = authenticate(self.request, username=username, password=password)
+
+            if not self.user_cache.email_verify:
+                send_email_to_verify(self.request, self.user_cache, use_https=False)
+                raise ValidationError(
+                    'Email not verify, check your email.',
+                    code='invalid_login'
+                )
+
+            if self.user_cache is None:
+                raise self.get_invalid_login_error()
+            else:
+                self.confirm_login_allowed(self.user_cache)
+        return self.cleaned_data
 
     class Meta:
         model = get_user_model()

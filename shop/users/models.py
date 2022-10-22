@@ -18,6 +18,7 @@ class User(AbstractUser):
         },
     )
     email = models.EmailField(_('email address'), unique=True)
+    email_verify = models.BooleanField(_('email confirmed'), default=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
