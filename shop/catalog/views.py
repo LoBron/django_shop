@@ -1,15 +1,11 @@
 from typing import Optional, List
 
-from django.contrib.auth import logout, login
-from django.contrib.auth.views import LoginView
 from django.db.models import Q, QuerySet
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView, CreateView
+from django.shortcuts import get_object_or_404, render
+from django.views.generic import DetailView, ListView
 
 from cart.forms import CartAddProductForm
 from .models import Product, Category, Property, PropertyValue
-from .forms import RegisterUserForm, LoginUserForm
 from .utils import DataMixin, num_to_word
 
 
@@ -221,37 +217,4 @@ class ProductDetail(DataMixin, DetailView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
-class RegisterUser(CreateView):
-    form_class = RegisterUserForm
-    template_name = "catalog/register.html"
 
-    # success_url = reverse_lazy('home')
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['logo'] = 'Регистрация'
-        return context
-
-    def form_valid(self, form):
-        user = form.save()
-        login(self.request, user)
-        return redirect('home')
-
-
-class LoginUser(LoginView):
-    form_class = LoginUserForm
-    template_name = "catalog/login.html"
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['logo'] = 'Авторизация'
-        return context
-
-    def get_success_url(self):
-        """Функция нужна когда в настройках не прописан LOGIN_REDIRECT_URL"""
-        return reverse_lazy('home')
-
-
-def logout_user(request):
-    logout(request)
-    return redirect('login')

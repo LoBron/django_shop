@@ -1,0 +1,31 @@
+{% extends "main/layout.html" %}
+
+{% block main %}
+<div class="row">
+
+    <div class="col">
+    </div>
+
+    <div class="col-sm-4">
+        <h2>{{title}}</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            {% for f in form %}
+                <label for="exampleInputEmail1" class="form-label">{{f.label}}</label>
+                <p>{{ f }}</p>
+                <div id="emailHelp" class="form-text"><font color="red">{{ f.errors }}</font></div>
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="form-text"><font color="red">{{ error }}</font></div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success">Подтвердить</button>
+        </form>
+
+    </div>
+
+    <div class="col">
+    </div>
+
+</div>
+{% endblock %}

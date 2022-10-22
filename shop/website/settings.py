@@ -29,6 +29,11 @@ DEBUG = True
 ALLOWED_HOSTS = []
 CART_SESSION_ID = 'cart'
 
+AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -49,6 +54,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     # 'news.apps.NewsConfig',
     # 'womans.apps.WomansConfig',
+    'users.apps.UsersConfig',
     'catalog.apps.CatalogConfig',
     'cart.apps.CartConfig',
 ]
@@ -98,23 +104,23 @@ WSGI_APPLICATION = 'website.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'catalog',
-        'USER': 'postgres',
-        'PASSWORD': '1',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'catalog',
+#         'USER': 'postgres',
+#         'PASSWORD': '1',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 
 
 # Password validation
