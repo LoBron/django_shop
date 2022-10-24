@@ -27,12 +27,6 @@ SECRET_KEY = 'django-insecure-qolc27wb58l1ltj)s_^zre0i+4s)l3%4_%utcnhd(7*me65w&8
 DEBUG = True
 
 ALLOWED_HOSTS = []
-CART_SESSION_ID = 'cart'
-
-AUTH_USER_MODEL = 'users.User'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Application definition
 
@@ -167,6 +161,21 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+CART_SESSION_ID = 'cart'
+
+AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'loban-f@mail.ru'
+EMAIL_HOST_PASSWORD = 'jMPwNGa3R4Ved23fi7tL'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = 'loban-f@mail.ru'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
