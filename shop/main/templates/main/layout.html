@@ -50,14 +50,17 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'logout' %}" tabindex="-1">Выйти</a>
                 </li>
-                {% if request.user.is_staff %}
-                <li class="nav-item">
-                    <a class="nav-link active" href='/admin/' tabindex="-1">Администрирование</a>
-                </li>
-                {% endif %}
+                    {% if request.user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href='/admin/' tabindex="-1">Администрирование</a>
+                    </li>
+                    {% endif %}
                 {% else %}
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'register' %}" tabindex="-1">Регистрация</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-bs-toggle="modal" data-bs-target="#login_ajax" tabindex="-1">Войти Ajax</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'login' %}" tabindex="-1">Войти</a>
@@ -72,9 +75,15 @@
         {% block main %} {% endblock %}
     </main>
 </div>
-
+{% include 'users/modal_login_ajax.html' %}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous">
+</script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"
+        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+        crossorigin="anonymous">
+</script>
+<script src="{% static 'main.js' %}"></script>
 </body>
 </html>

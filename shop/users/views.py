@@ -5,6 +5,7 @@ from django.contrib.auth.views import (LoginView as Login,
                                        PasswordResetView as PasswordReset,
                                        PasswordResetConfirmView, PasswordResetCompleteView, PasswordResetDoneView)
 from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.http import urlsafe_base64_decode
@@ -60,11 +61,34 @@ class LoginView(Login):
     #         send_email_to_verify(self.request, user, use_https=False)
     #         return redirect('confirm_email')
 
-
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = _('Авторизация')
         return context
+
+
+class LoginAjaxView(View):
+
+    def post(self, request):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        if email and password:
+            user = authenticate(email=email, password=password)
+            if user:
+                login(request, user)
+                return JsonResponse(
+                    data={'status': 201},
+                    status=200
+                )
+            return JsonResponse(
+                data={'status': 400, 'error': 'Your data is not valid.'},
+                status=200
+            )
+        return JsonResponse(
+            data={'status': 400, 'error': 'Enter your email and password.'},
+            status=200
+        )
+        # return {'status': True}
 
 
 class PasswordResetView(PasswordReset):
@@ -118,7 +142,6 @@ class EmailVerify(View):
             return redirect('home')
         else:
             redirect('invalid_verify')
-
 
     @staticmethod
     def get_user(uidb64) -> Optional[User]:

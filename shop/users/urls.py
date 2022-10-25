@@ -18,6 +18,7 @@ urlpatterns = [
     ),
 
     path('login/', LoginView.as_view(), name='login'),
+    path('login/ajax/', LoginAjaxView.as_view(), name='login_ajax'),
     path('logout/', LogoutView.as_view(), name='logout'),
 
     path('password_reset/', PasswordResetView.as_view(), name='password_reset'),
