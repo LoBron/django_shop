@@ -40,7 +40,8 @@ INSTALLED_APPS = [
 
     "debug_toolbar",
     "mptt",
-    "view_breadcrumbs",
+    "phonenumber_field",
+    # "django_address",
 
     # 'photologue',
     # 'sortedm2m',
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'catalog.apps.CatalogConfig',
     'cart.apps.CartConfig',
+    'order.apps.OrderConfig'
 ]
 
 MIDDLEWARE = [

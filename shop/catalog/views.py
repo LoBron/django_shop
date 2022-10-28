@@ -12,6 +12,11 @@ from .utils import DataMixin, num_to_word
 class ProductList(DataMixin, ListView):
 
     def get_queryset(self):
+        print(self.request.session.items())
+        # if self.request.user.is_authenticated:
+        #     print(self.request.user.email)
+        # elif self.request.user.is_anonymous:
+        #     print('пашол нахуй')
         return Product.objects.all().order_by('-availability', 'category').select_related('category')
 
     def get_context_data(self, *, object_list=None, **kwargs):
