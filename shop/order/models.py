@@ -30,20 +30,25 @@ class Order(models.Model):
     )
     products = models.ManyToManyField(
         Product,
-        through='ProductOrder'
+        through='OrderProduct'
     )
     comment = models.TextField(_('Comment'), default='')
+    statuses = models.ManyToManyField('Status', through='OrderStatus')
+
+    def __str__(self):
+        user = self.user.username if self.user else 'Аноним'
+        return f'Заказ - №{self.pk}, клиент - {user}'
 
 
-class ProductOrder(models.Model):
-    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
+class OrderProduct(models.Model):
     order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, verbose_name=_('Product'), on_delete=models.PROTECT)
     amount = models.PositiveIntegerField(_('Amount'), default=1)
 
 
 class Status(models.Model):
     name = models.CharField(_('Status'), max_length=100, unique=True)
-    orders = models.ManyToManyField(Order, through='StatusOrder')
+    # orders = models.ManyToManyField(Order, through='StatusOrder')
 
     class Meta:
         index_together = (('id', 'name'),)
@@ -52,10 +57,13 @@ class Status(models.Model):
         return self.name
 
 
-class StatusOrder(models.Model):
-    order = models.ForeignKey(Order, verbose_name=_('Status'), on_delete=models.CASCADE)
-    status = models.ForeignKey(Status, verbose_name=_('Order'), on_delete=models.CASCADE)
+class OrderStatus(models.Model):
+    order = models.ForeignKey(Order, verbose_name=_('Order'), on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, verbose_name=_('Status'), on_delete=models.CASCADE)
     changed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Заказ - №{self.order.pk}, cтатус - {self.status.name}, добавлен - {self.changed_at}'
 
 
 class PaymentStatus(models.Model):

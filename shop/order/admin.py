@@ -3,13 +3,8 @@ from django.contrib import admin
 from .models import *
 
 
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(ProductOrder)
-class ProductOrderAdmin(admin.ModelAdmin):
+@admin.register(OrderProduct)
+class OrderProductAdmin(admin.ModelAdmin):
     pass
 
 
@@ -18,9 +13,22 @@ class StatusAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(StatusOrder)
-class StatusOrderAdmin(admin.ModelAdmin):
-    pass
+class StatusInline(admin.StackedInline):
+    model = Order.statuses.through
+    extra = 1
+
+
+# order_status
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    inlines = (StatusInline,)
+
+
+# @admin.register(StatusOrder)
+# class StatusOrderAdmin(admin.ModelAdmin):
+#     inlines = (StatusOrderInline,)
+
+admin.site.register(OrderStatus)
 
 
 @admin.register(PaymentStatus)
